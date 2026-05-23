@@ -49,6 +49,7 @@ To keep this guide lightweight yet exhaustive, we maintain dedicated, highly com
 | 🎮 **Playgrounds, CTFs & Incidents** | Interactive prompt injection labs (Gandalf, TensorTrust), AI bug bounties, and real-world failure analyses. | **[PLAYGROUNDS_AND_LABS.md](PLAYGROUNDS_AND_LABS.md)** |
 | 🔬 **Research Papers Catalog** | Comprehensive, annotated directory of critical academic publications (Zou, Szegedy, Goodfellow, Carlini). | **[RESEARCH_PAPERS.md](RESEARCH_PAPERS.md)** |
 | 🏆 **Frontier Safety Leaderboard** | Fact-grounded comparison of GPT-4o, Claude 3.5 Sonnet, Gemini 1.5 Pro, Llama 3.1, and Grok 2 across safety Elo. | **[SAFETY_LEADERBOARD.md](SAFETY_LEADERBOARD.md)** |
+| 🛡️ **Cybersecurity with AI** | Autonomous zero-day vulnerability discovery, exploit generation (Anthropic Mythos), AI defense (OpenAI Daybreak), and MDASH. | **[CYBER_AI.md](CYBER_AI.md)** |
 
 ---
 
