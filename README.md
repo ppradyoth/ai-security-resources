@@ -44,7 +44,11 @@ In 1986, Rumelhart and Hinton proved backpropagation worked at scale. Nobody car
 
 Here's what actually happened between the papers:
 
+- **1936 — Turing's Computable Numbers:** Alan Turing introduces the Turing Machine and proves the undecidability of the Halting Problem. 
+  *Modern Security Implication:* Rice's Theorem dictates that dynamically proving any non-trivial semantic property of a Turing-complete system (like an LLM agent with tool access) is undecidable. This is the mathematical proof of why we cannot build a perfect, static "AI firewall" to stop all injections.
 - **1943 — McCulloch-Pitts Neuron:** First mathematical model of a neuron. Irrelevant until hardware caught up 70 years later.
+- **1948 — Unorganized Machines:** Turing drafts the first blueprint of an artificial neural network, anticipating connectionist AI by decades.
+- **1950 — The Imitation Game:** Turing introduces the Turing Test. Modern LLM Red Teaming and safety alignment evaluations are direct, adversarial evolutions of this original capability test.
 - **1958 — Perceptron:** Rosenblatt's learning machine. Hyped, then killed by Minsky's proof that it couldn't do XOR.
 - **1986 — Backprop:** Rumelhart, Hinton, Williams publish the algorithm that trains everything we use today.
 - **1997 — LSTMs (Hochreiter & Schmidhuber):** Memory for sequences. Dominated NLP until attention killed it.
