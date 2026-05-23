@@ -34,6 +34,19 @@ This isn't a beginner list. This is the resource you wish existed when you start
 
 ---
 
+## 📚 Specialized Deep-Dive Handbooks
+
+To keep this guide lightweight yet exhaustive, we maintain dedicated, highly comprehensive specialized guides for career, standardizations, and evaluation strategies:
+
+| Handbook | Core Scope | Link |
+|:---|:---|:---|
+| 💼 **Global Salary Handbook** | Exhaustive country-by-country comp rates (US, IN, UK, IE, SG, AU, ME, EU), tax brackets, rent crises, and career strategies. | **[SALARY_REALITY.md](SALARY_REALITY.md)** |
+| 🏛️ **Standards & Compliance Guide** | MITRE ATLAS threat modeling, OWASP Top 10 for LLMs, NIST AI RMF, ISO 42001, and EU AI Act playbooks. | **[STANDARDS_AND_COMPLIANCE.md](STANDARDS_AND_COMPLIANCE.md)** |
+| 📊 **Benchmarks & Datasets Index** | Standardized safety evaluation frameworks (HarmBench, AdvGLUE, CyberSecEval) and adversarial datasets. | **[BENCHMARKS_AND_DATASETS.md](BENCHMARKS_AND_DATASETS.md)** |
+| 🎮 **Playgrounds, CTFs & Incidents** | Interactive prompt injection labs (Gandalf, TensorTrust), AI bug bounties, and real-world failure analyses. | **[PLAYGROUNDS_AND_LABS.md](PLAYGROUNDS_AND_LABS.md)** |
+
+---
+
 ## 🧠 Why This Matters — The Origin Story
 
 > *Understanding the "why" separates a technician from a practitioner.*
@@ -322,38 +335,15 @@ Open-source model ecosystems (Hugging Face, Ollama, CivitAI) have created a mass
 
 ## 🌐 Others
 
-### Benchmarks & Evaluation
+This section covers critical elements of the broader AI security landscape: standardization, evaluation benchmarks, and studying real-world failures.
 
-| Benchmark | Description | Metric |
-|:---|:---|:---|
-| **[HarmBench](https://github.com/centerforaisafety/HarmBench)** | Standardized evaluation framework for adversarial robustness. 400+ behaviors across 18 attack methods. | Attack Success Rate (ASR) |
-| **[DecodingTrust](https://github.com/AI-Secure/DecodingTrust)** | 8-dimensional trustworthiness evaluation: toxicity, privacy, OOD robustness, machine ethics, fairness. | Per-dimension scores |
-| **[RedBench / RedEval](https://github.com/knoveleng/redeval)** | Aggregates 37 safety benchmarks into unified taxonomy. 22 risk categories. | Standardized taxonomy |
-| **[HELM (Holistic Evaluation of LMs)](https://crfm.stanford.edu/helm/)** | Stanford's broad LLM evaluation. Includes robustness and safety scenarios. | Multi-scenario scoring |
-| **[WMDP (Weapons of Mass Destruction Proxy)](https://www.wmdp.ai/)** | Biosecurity/cybersecurity uplift evaluation. Tests whether models provide dangerous uplift. | Uplift measurement |
-| **[CyberSecEval (Meta)](https://github.com/meta-llama/PurpleLlama/tree/main/CybersecurityBenchmarks)** | Cybersecurity-specific LLM evaluation. Secure code generation, vulnerability identification. | Security-specific scoring |
-| **[WildJailbreak](https://allenai.org/)** | 262k training examples for adversarial robustness. Largest public safety dataset. | ASR on held-out set |
+To explore these domains in exhaustive detail without cluttering this README, we maintain dedicated practitioner handbooks:
 
-### Datasets for Training Defenses
+*   👉 **[AI Security Standards & Compliance Guide (STANDARDS_AND_COMPLIANCE.md)](STANDARDS_AND_COMPLIANCE.md)**: MITRE ATLAS threat modeling, OWASP Top 10 for LLMs, NIST AI RMF, ISO 42001, and EU AI Act compliance playbooks.
+*   👉 **[Benchmarks & Datasets Index (BENCHMARKS_AND_DATASETS.md)](BENCHMARKS_AND_DATASETS.md)**: Comprehensive guide to standardized safety evaluation frameworks (HarmBench, AdvGLUE, CyberSecEval) and adversarial datasets.
+*   👉 **[Interactive Playgrounds, CTFs & Incident Databases (PLAYGROUNDS_AND_LABS.md)](PLAYGROUNDS_AND_LABS.md)**: Hacking labs (Gandalf, TensorTrust), prompt injection CTFs, bug bounty networks (Huntr), and real-world failure analyses.
 
-| Dataset | Size | Description |
-|:---|:---|:---|
-| **[Anthropic hh-rlhf](https://huggingface.co/datasets/Anthropic/hh-rlhf)** | 160k | Foundational RLHF dataset. Human preference + red team conversations. |
-| **[WildGuardMix](https://allenai.org/)** | 92k | Multi-task I/O guardrail evaluation dataset. |
-| **[RealToxicityPrompts](https://github.com/allenai/real-toxicity-prompts)** | 100k | Standard toxicity evaluation prompts. |
-| **[Do-Not-Answer](https://github.com/Libr-AI/do-not-answer)** | 939 | Curated questions responsible LLMs should decline. Evaluates refusal calibration. |
-| **[AdvBench](https://github.com/llm-attacks/llm-attacks)** | 520 | Harmful behaviors and strings benchmark. Paired with the GCG attack code. |
-
-### Governance, Standards & Frameworks
-
-| Framework | Organization | Description |
-|:---|:---|:---|
-| **[NIST AI Risk Management Framework](https://www.nist.gov/itl/ai-risk-management-framework)** | NIST | GOVERN-MAP-MEASURE-MANAGE structure for enterprise AI risk. Required for US government compliance. |
-| **[EU AI Act](https://artificialintelligenceact.eu/)** | European Union | Risk-tiered regulation. High-risk AI systems face mandatory conformity assessments. Know this for enterprise sales. |
-| **[OWASP Top 10 for LLM Applications 2025](https://owasp.org/www-project-top-10-for-large-language-model-applications/)** | OWASP | Updated for agentic AI. Prompt Injection, Excessive Agency, Vector/Embedding weaknesses. |
-| **[Google Secure AI Framework (SAIF)](https://safety.google/cybersecurity-advancements/saif/)** | Google | 6-element framework for securing AI systems. Operationally focused. |
-| **[Frontier Model Forum Best Practices](https://www.frontiermodelforum.org/)** | Industry | OpenAI + Anthropic + Google + Microsoft joint safety commitments. |
-| **[ISO/IEC 42001 AI Management System](https://www.iso.org/standard/81230.html)** | ISO | The AI equivalent of ISO 27001. Enterprise AI governance certification. |
+---
 
 ### Agentic & Multimodal Security
 
