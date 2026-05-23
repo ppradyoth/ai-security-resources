@@ -43,6 +43,7 @@ To keep this guide lightweight yet exhaustive, we maintain dedicated, highly com
 | 💼 **Global Salary Handbook** | Exhaustive country-by-country comp rates (US, IN, UK, IE, SG, AU, ME, EU), tax brackets, rent crises, and career strategies. | **[SALARY_REALITY.md](SALARY_REALITY.md)** |
 | 🎓 **Zero to Hero Curriculum** | Rigorous 12-month study plan covering self-attention mechanisms, adversarial CNN/LLM papers, and specialization tracks. | **[ROADMAP.md](ROADMAP.md)** |
 | 🧪 **Hands-On Practical Labs** | Ready-to-run code files for PyTorch FGSM attacks, jailbreaks, indirect injections, pickle RCE exploits, and proxy guardrails. | **[LABS.md](LABS.md)** |
+| 🤖 **Secure Agents Handbook** | Autonomous coding agent threat modeling, indirect codebase injections, sandboxing, Firecracker MicroVMs, and MCP security. | **[AGENT_SECURITY.md](AGENT_SECURITY.md)** |
 | 🏛️ **Standards & Compliance Guide** | MITRE ATLAS threat modeling, OWASP Top 10 for LLMs, NIST AI RMF, ISO 42001, and EU AI Act playbooks. | **[STANDARDS_AND_COMPLIANCE.md](STANDARDS_AND_COMPLIANCE.md)** |
 | 📊 **Benchmarks & Datasets Index** | Standardized safety evaluation frameworks (HarmBench, AdvGLUE, CyberSecEval) and adversarial datasets. | **[BENCHMARKS_AND_DATASETS.md](BENCHMARKS_AND_DATASETS.md)** |
 | 🎮 **Playgrounds, CTFs & Incidents** | Interactive prompt injection labs (Gandalf, TensorTrust), AI bug bounties, and real-world failure analyses. | **[PLAYGROUNDS_AND_LABS.md](PLAYGROUNDS_AND_LABS.md)** |
