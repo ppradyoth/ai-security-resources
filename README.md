@@ -524,14 +524,200 @@ Choose your path based on what energized you most in Phases 0–2:
 
 ### Salary Reality (2025–2026)
 
-| Level | Years | Base | Total Comp (Frontier Labs) |
-|:---|:---|:---|:---|
-| L3 / Mid | 3–5 | $140k–$175k | $180k–$280k |
-| L4 / Senior | 5–8 | $175k–$230k | $280k–$400k |
-| L5 / Staff | 8+ | $220k–$280k | $350k–$600k+ |
-| Research Scientist | PhD + 3 | $200k–$280k | $350k–$700k+ |
+> Numbers are honest market estimates. This field commands a **30–56% premium** over generalist SWE/security roles globally — because the supply of people who genuinely understand both AI architecture and adversarial security is tiny.
 
-*Data from Levels.fyi, Blind, LinkedIn. Ranges reflect US market. India/EU adjust accordingly.*
+---
+
+#### 🇺🇸 United States
+
+The global reference market. All comp figures include base + target bonus. "Total comp" at frontier labs includes RSUs.
+
+| Level | Approx. Experience | Base Salary | Total Comp (Frontier Lab) | Notes |
+|:---|:---|:---|:---|:---|
+| **Junior / L3** | 1–3 yrs | $110k–$150k | $140k–$200k | Entry at OpenAI/Anthropic starts here with strong ML background |
+| **Mid / L4** | 3–6 yrs | $150k–$200k | $200k–$320k | Most practitioners land here within 2–3 yrs of specialization |
+| **Senior / L5** | 6–9 yrs | $200k–$270k | $300k–$480k | Requires owning a domain (e.g., agentic red teaming, model scanning) |
+| **Staff / L6** | 9+ yrs | $250k–$320k | $400k–$700k+ | Rare. Requires published impact or a tool the field depends on |
+| **Research Scientist** | PhD + 3 yrs | $220k–$300k | $400k–$800k+ | Labs pay for publication track record and capability research |
+
+*Sources: [Levels.fyi](https://levels.fyi), [Blind](https://teamblind.com), [LinkedIn Salary](https://linkedin.com/salary)*
+
+**City multipliers (vs. national average):**
+- San Francisco / Bay Area: +30–45%
+- New York City: +20–30%
+- Seattle: +15–25%
+- Austin / Remote: ±5% (many labs now pay location-adjusted)
+
+---
+
+#### 🇮🇳 India
+
+The fastest-growing AI security talent market. Roles are concentrated in **Bengaluru, Hyderabad, and Pune** at MNCs and Global Capability Centers (GCCs). Product companies and funded startups pay 2–3× more than IT services firms for the same title.
+
+| Level | Approx. Experience | IT Services (TCS/Infosys/Wipro) | MNC / GCC (Google, Microsoft, Cisco) | AI-Native Startup / Lab |
+|:---|:---|:---|:---|:---|
+| **Junior** | 0–3 yrs | ₹8–14 LPA | ₹15–22 LPA | ₹12–20 LPA |
+| **Mid-Level** | 3–6 yrs | ₹14–22 LPA | ₹22–40 LPA | ₹25–45 LPA |
+| **Senior** | 6–9 yrs | ₹22–35 LPA | ₹40–70 LPA | ₹45–80 LPA |
+| **Staff / Principal** | 9+ yrs | ₹35–55 LPA | ₹70–120 LPA | ₹80–150+ LPA |
+| **Research Scientist** | PhD / strong pubs | Uncommon | ₹60–120 LPA | ₹80–200+ LPA |
+
+*LPA = Lakhs Per Annum (₹1 LPA = ₹100,000). Sources: [6figr.com](https://6figr.com), [Glassdoor India](https://glassdoor.co.in), [AmbitionBox](https://ambitionbox.com), [Naukri Salary Tool](https://naukri.com)*
+
+**City context:**
+- **Bengaluru:** Highest AI salaries. GCCs + product companies dominant. Mid-level AI security: ₹25–40 LPA typical.
+- **Hyderabad:** GCCs growing fast (Microsoft, Google, Amazon R&D centers). Near-Bengaluru comp.
+- **Mumbai:** BFSI (banking/finance) sector heavy. High demand for AI risk and model governance roles.
+- **Pune:** MNC presence, slightly lower than Bengaluru/Hyderabad by 10–15%.
+- **NCR (Delhi/Gurugram/Noida):** Strong consulting and enterprise demand (KPMG, Deloitte, EY AI practices).
+
+**Important caveats for India:**
+- "AI Security" as an explicit title is still emerging. Budget for 6–18 months of the role existing under a different name before your actual work matches.
+- MNC comp often includes ESOPs/RSUs that vest over 4 years — evaluate total compensation, not just CTC.
+- Switching companies every 2 years is the fastest path to market rate. Indian salary increments (8–12% p.a.) do not keep pace with role scarcity premium.
+- GCCs from US labs (like Google DARS, Microsoft IDC, Cisco security research) offer closest to international parity.
+
+**Who's actively hiring in India (2025–2026):**
+Google, Microsoft, Cisco, KPMG, Deloitte, NatWest Group (AI risk), Zscaler, Protectt.ai, SISA, BlueFireRedteam, Parai Labs, and a growing number of AI safety annotation/red team annotation platforms (Mindrift, Mercor, Scale AI India).
+
+---
+
+#### 🇬🇧 United Kingdom
+
+Strong AI security ecosystem anchored in **London** and **Cambridge**. The UK government's AI Safety Institute (AISI) is a major employer. Post-Brexit, some talent flow to EU has increased competition for experienced practitioners.
+
+| Level | Approx. Experience | Base Salary (GBP) | Total Comp with Bonus/RSU |
+|:---|:---|:---|:---|
+| **Junior** | 0–3 yrs | £45k–£65k | £50k–£80k |
+| **Mid-Level** | 3–6 yrs | £65k–£90k | £80k–£120k |
+| **Senior** | 6–9 yrs | £90k–£130k | £115k–£180k |
+| **Staff / Principal** | 9+ yrs | £130k–£175k | £175k–£280k+ |
+| **Research Scientist** | PhD + publications | £90k–£150k | £120k–£250k+ |
+
+*Sources: [LinkedIn UK Salary](https://linkedin.com), [CW Jobs](https://cwjobs.co.uk), [Glassdoor UK](https://glassdoor.co.uk), [ITJobsWatch](https://itjobswatch.co.uk)*
+
+**Notable employers:** UK AI Safety Institute (AISI), DeepMind London, Anthropic (London office), Darktrace, BAE Systems AI, GCHQ / NCSC (government), Palantir UK, big 4 (AI risk practices).
+
+---
+
+#### 🇩🇪 Germany
+
+Strong automotive + enterprise AI sector. **Munich** and **Berlin** are the primary hubs. German market values depth over breadth — specialization pays disproportionately well.
+
+| Level | Base Salary (EUR) | Notes |
+|:---|:---|:---|
+| **Junior (0–3 yrs)** | €50k–€70k | Entry is solid. Apprenticeship culture means companies invest in training. |
+| **Mid-Level (3–6 yrs)** | €70k–€100k | AI security as explicit role growing in automotive (BMW, Bosch, SAP). |
+| **Senior (6–9 yrs)** | €100k–€140k | Top 25% of market. Munich tends to pay 10–15% more than Berlin. |
+| **Staff / Principal (9+)** | €140k–€200k+ | Rare at this level; research institutes (Fraunhofer, DFKI) also compete. |
+
+*Note: German salaries are gross. After taxes and social contributions (approx. 40–45% for high earners), net take-home is significantly lower — offset by strong social benefits (healthcare, pension, unemployment insurance).*
+
+---
+
+#### 🇳🇱 Netherlands
+
+Amsterdam tech hub with significant international talent due to the **30% tax ruling** — expats may pay tax on only 70% of their salary for up to 5 years, making nominal salaries competitive globally.
+
+| Level | Base Salary (EUR) | Effective Net (with 30% ruling) |
+|:---|:---|:---|
+| **Mid-Level (3–6 yrs)** | €70k–€100k | Significantly higher than comparable UK/Germany net take-home |
+| **Senior (6–9 yrs)** | €95k–€135k | Very competitive globally when ruling applies |
+| **Staff / Principal (9+)** | €130k–€180k+ | Top tier. ASML, Booking.com, Elastic hiring at this level. |
+
+---
+
+#### 🇫🇷 France
+
+**Paris** AI ecosystem anchored by Mistral AI, Meta AI (FAIR Paris), Hugging Face, and a growing government-backed AI safety initiative (ANSSI for AI). Salaries lower than UK/Germany/Netherlands but rising fast — and cost of living in Paris is lower than London.
+
+| Level | Base Salary (EUR) |
+|:---|:---|
+| **Mid-Level (3–6 yrs)** | €60k–€85k |
+| **Senior (6–9 yrs)** | €85k–€120k |
+| **Staff / Principal (9+)** | €120k–€160k+ |
+
+*Mistral AI is the standout French employer for AI security/safety roles. ANSSI (Agence Nationale de la Sécurité des Systèmes d'Information) is the government employer with AI security mandates.*
+
+---
+
+#### 🇨🇭 Switzerland
+
+Consistently the highest **gross** salaries in Europe. Zurich and Basel anchored by finance and pharma. EPFL/ETH Zurich AI research ecosystem. High cost of living partially offsets high gross.
+
+| Level | Base Salary (CHF) | USD Equivalent (approx.) |
+|:---|:---|:---|
+| **Mid-Level (3–6 yrs)** | CHF 110k–160k | ~$120k–$175k |
+| **Senior (6–9 yrs)** | CHF 160k–220k | ~$175k–$240k |
+| **Staff / Principal (9+)** | CHF 220k–350k+ | ~$240k–$385k+ |
+
+---
+
+#### 🇸🇪 Sweden
+
+Stockholm tech scene. Ericsson, Spotify, Klarna, and a growing AI startup ecosystem. High taxes (~50% marginal rate for high earners) mean evaluating total package — but strong social benefits compensate.
+
+| Level | Base Salary (SEK) | USD Equivalent (approx.) |
+|:---|:---|:---|
+| **Mid-Level (3–6 yrs)** | SEK 650k–850k | ~$62k–$82k |
+| **Senior (6–9 yrs)** | SEK 850k–1.1M | ~$82k–$106k |
+| **Staff / Principal (9+)** | SEK 1.1M–1.5M+ | ~$106k–$145k+ |
+
+---
+
+#### 🇵🇱 Poland + Eastern Europe
+
+**Warsaw, Kraków, Wrocław** are major nearshoring hubs. Many global companies run significant security and ML engineering centres here. B2B contracting (rather than employment) is common and can increase effective income by 20–30%.
+
+| Level | Poland (PLN/year) | Eastern Europe avg (EUR/year) |
+|:---|:---|:---|
+| **Mid-Level (3–6 yrs)** | PLN 200k–300k (~€46k–€70k) | €45k–€65k |
+| **Senior (6–9 yrs)** | PLN 300k–420k (~€70k–€98k) | €60k–€80k |
+| **Staff / Principal (9+)** | PLN 400k–600k+ (~€93k–€140k) | €75k–€100k+ |
+
+*Many senior Polish engineers working for US/UK companies remotely can earn at near-Western rates. B2B contracts are standard — negotiate as a contractor, not an employee.*
+
+---
+
+#### 🌏 Asia-Pacific
+
+| Country | Level | Salary Range | Notes |
+|:---|:---|:---|:---|
+| **🇸🇬 Singapore** | Mid | SGD $120k–$180k | Premier APAC hub. Government-backed AI National Strategy drives demand. Tax rate ~22% max — very competitive net. |
+| **🇸🇬 Singapore** | Senior | SGD $180k–$280k | MAS (financial regulator) AI risk roles; GovTech; DBS, OCBC (banks with AI teams). |
+| **🇸🇬 Singapore** | Principal | SGD $280k–$400k+ | Rare but exists at frontier lab APAC hubs. |
+| **🇦🇺 Australia** | Mid | AUD $130k–$180k | Strong demand in finance, mining, government. |
+| **🇦🇺 Australia** | Senior | AUD $180k–$260k | Severe talent shortage at senior/principal level. Contractors: AUD $1,200–$1,800/day. |
+| **🇯🇵 Japan** | Mid | ¥8M–¥14M | Growing fast. Language barrier limits global pool — premium for bilingual AI security engineers. |
+| **🇰🇷 South Korea** | Mid | KRW 70M–100M | Samsung, Kakao, Naver investing heavily in AI security R&D. |
+
+---
+
+#### 🇨🇦 Canada
+
+Strong AI research cluster in **Toronto** (Vector Institute), **Montreal** (Mila), and **Vancouver**. Close proximity to US market creates competitive pressure — companies pay above typical Canadian SWE rates to retain talent that could easily work remotely for US companies.
+
+| Level | Base Salary (CAD) | Notes |
+|:---|:---|:---|
+| **Mid-Level (3–6 yrs)** | CAD $110k–$160k | US labs with Canadian offices pay at US-adjacent rates |
+| **Senior (6–9 yrs)** | CAD $160k–$220k | Mila-adjacent research roles + Vector Institute affiliates |
+| **Staff / Principal (9+)** | CAD $200k–$290k+ | Cohere, Waabi, and other Canadian AI labs at this level |
+
+---
+
+#### 💡 Reading Salary Data Like a Professional
+
+1. **Always convert to net take-home, not gross** — Switzerland's CHF 200k and Germany's €150k sound similar, but net income differs significantly after taxes and social contributions. Tools: [smartasset.com](https://smartasset.com) (US), [germanysalary.com](https://www.germanysalary.com) (DE), [income-tax.co.uk](https://income-tax.co.uk) (UK).
+
+2. **Total compensation > base salary** — RSUs (Restricted Stock Units) at Anthropic, OpenAI, or Google can easily double your base salary. Always ask the vesting schedule, cliff, and refresh policy.
+
+3. **"AI Security" as a title is new, the comp is not** — negotiate based on the *intersection* of what you bring (security depth + ML depth), not the title. You are solving a problem most companies don't even have a budget line for yet — price accordingly.
+
+4. **Remote-first companies have equalized significantly** — OpenAI, Anthropic, Lakera, Protect AI all hire globally with compensation that varies but is increasingly global-range for exceptional candidates.
+
+5. **The India-to-global pipeline is real** — strong Indian AI security practitioners are being hired directly by US/UK labs (remote or relocated). If you are in India with genuine adversarial ML depth, you are competing in a global market, not just a domestic one.
+
+*Data sources: [Levels.fyi](https://levels.fyi), [Glassdoor](https://glassdoor.com), [LinkedIn Salary](https://linkedin.com/salary), [6figr.com](https://6figr.com), [AmbitionBox](https://ambitionbox.com), [ITJobsWatch](https://itjobswatch.co.uk), [swissdevjobs.ch](https://swissdevjobs.ch), [Blind](https://teamblind.com). All figures are 2025–2026 estimates — actual offers vary based on company, individual negotiation, and role scope.*
 
 ### Where to Work — Company Breakdown
 
