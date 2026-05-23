@@ -600,6 +600,38 @@ Strong AI security ecosystem anchored in **London** and **Cambridge**. The UK go
 
 ---
 
+#### 🇮🇪 Ireland
+
+Dublin is the undisputed primary hub for European tech, acting as the EMEA headquarters for the world’s largest tech giants. This creates a highly bifurcated market: Tier-1 US multinationals (FAANG, Stripe, Salesforce) pay exceptional, stock-heavy packages that align with global standards, while local tech companies, fintechs, and consulting firms offer competitive European-level base salaries.
+
+| Level | Approx. Experience | Base Salary (EUR) | Total Comp (US MNC / Tier 1) | Notes |
+|:---|:---|:---|:---|:---|
+| **Junior** | 0–3 yrs | €50k–€70k | €65k–€95k | Common for entry-level security analysts or junior ML engineers at large MNCs. |
+| **Mid-Level** | 3–6 yrs | €70k–€100k | €100k–€150k | High demand for GRC (AI Act/GDPR) and system-level security engineers. |
+| **Senior** | 6–9 yrs | €100k–€140k | €160k–€240k | High equity components in Big Tech HQs skew total comp significantly. |
+| **Staff / Principal** | 9+ yrs | €140k–€190k | €250k–€380k+ | Very rare roles that often report directly to US engineering leadership. |
+
+*Sources: [Levels.fyi Dublin](https://www.levels.fyi), [Morgan McKinley Ireland Tech Salary Guide](https://www.morganmckinley.com), [CPL Salary Survey](https://www.cpl.com), [Glassdoor Ireland](https://www.glassdoor.ie)*
+
+**City context & Talent Hubs:**
+- **Dublin ("Silicon Docks"):** The powerhouse of the Irish tech ecosystem. Over 90% of specialized AI security and high-end MLE/Security roles are concentrated in Dublin (D1, D2, D4, and Sandyford/D18).
+- **Cork:** A growing secondary hub driven by Apple's massive EMEA campus, McAfee, and Dell, focusing on hardware-level security, systems engineering, and enterprise SaaS.
+- **Galway & Limerick:** Emerging research and engineering satellites with centers for companies like Cisco (Galway) and Analog Devices (Limerick).
+
+**Important caveats for Ireland:**
+- **The "EMEA HQ" Premium:** Because Dublin hosts the European headquarters for major US tech corporations, Tier-1 employers pay an average 1.8x to 2.5x multiplier on Total Compensation (TC) compared to local Irish firms, largely via equity (RSUs) and sign-on/performance bonuses.
+- **Aggressive Marginal Taxation:** High earners in Ireland hit the top tax bracket very quickly. Single individuals pay a 40% marginal PAYE rate on income over €44,000 (for 2026), plus the Universal Social Charge (USC) up to 8% and PRSI (4%). The effective tax rate on high senior/staff salaries easily approaches 50%.
+- **The Housing Crisis Bottleneck:** Dublin is experiencing one of the most severe housing and rental shortages in Europe. Rent for a basic 1-bed apartment in Dublin ranges from €1,900 to €2,600/month, and finding accommodation is extremely difficult. Consequently, hybrid flexibility or fully remote work options within Ireland are highly valued and negotiated.
+- **GDPR and AI Act Regulatory Nexus:** Because the Irish Data Protection Commission (DPC) is the lead supervisory authority for most US tech firms in the EU, there is a disproportionately high density of roles focusing on **AI Governance, AI Compliance, Privacy-Preserving ML, and Auditing** in Dublin relative to its size.
+
+**Who's actively hiring in Ireland (2025–2026):**
+- **US Tech Giants:** Google (EMEA HQ / Trust & Safety), Meta (EMEA HQ / AI Safety & Integrity), Microsoft, AWS, Salesforce, LinkedIn.
+- **Fintech & Platforms:** Stripe (highly competitive infrastructure, fraud, and ML security teams), Mastercard Technology Hub, Workday.
+- **Dedicated Security Firms:** Zscaler, CrowdStrike, Sysdig, Integrity360 (local security market leader), Tenable.
+- **Enterprise Consulting:** PwC, Deloitte, EY, KPMG (actively building out AI risk assessment and AI Act advisory teams).
+
+---
+
 #### 🇩🇪 Germany
 
 Strong automotive + enterprise AI sector. **Munich** and **Berlin** are the primary hubs. German market values depth over breadth — specialization pays disproportionately well.
