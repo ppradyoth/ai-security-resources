@@ -586,6 +586,13 @@ Choose your path based on what energized you most in Phases 0–2:
 
 ---
 
+## 👥 Contributors & Acknowledgements
+
+*   **[@ppradyoth](https://github.com/ppradyoth)** (Lead Maintainer) — AI Red Teaming & Security Engineering.
+*   **[Antigravity 🌌](https://github.com/google-deepmind)** (AI Co-Architect) — Agentic coding assistant developed by Google DeepMind.
+
+---
+
 ## 🤝 How to Contribute
 
 This repo is better because practitioners like you make it better.
