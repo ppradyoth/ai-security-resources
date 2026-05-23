@@ -41,6 +41,8 @@ To keep this guide lightweight yet exhaustive, we maintain dedicated, highly com
 | Handbook | Core Scope | Link |
 |:---|:---|:---|
 | 💼 **Global Salary Handbook** | Exhaustive country-by-country comp rates (US, IN, UK, IE, SG, AU, ME, EU), tax brackets, rent crises, and career strategies. | **[SALARY_REALITY.md](SALARY_REALITY.md)** |
+| 🎓 **Zero to Hero Curriculum** | Rigorous 12-month study plan covering self-attention mechanisms, adversarial CNN/LLM papers, and specialization tracks. | **[ROADMAP.md](ROADMAP.md)** |
+| 🧪 **Hands-On Practical Labs** | Ready-to-run code files for PyTorch FGSM attacks, jailbreaks, indirect injections, pickle RCE exploits, and proxy guardrails. | **[LABS.md](LABS.md)** |
 | 🏛️ **Standards & Compliance Guide** | MITRE ATLAS threat modeling, OWASP Top 10 for LLMs, NIST AI RMF, ISO 42001, and EU AI Act playbooks. | **[STANDARDS_AND_COMPLIANCE.md](STANDARDS_AND_COMPLIANCE.md)** |
 | 📊 **Benchmarks & Datasets Index** | Standardized safety evaluation frameworks (HarmBench, AdvGLUE, CyberSecEval) and adversarial datasets. | **[BENCHMARKS_AND_DATASETS.md](BENCHMARKS_AND_DATASETS.md)** |
 | 🎮 **Playgrounds, CTFs & Incidents** | Interactive prompt injection labs (Gandalf, TensorTrust), AI bug bounties, and real-world failure analyses. | **[PLAYGROUNDS_AND_LABS.md](PLAYGROUNDS_AND_LABS.md)** |
@@ -372,122 +374,19 @@ To explore these domains in exhaustive detail without cluttering this README, we
 
 ## 🚀 Zero to Hero Roadmap
 
-> *Structured for someone with 3 years of experience who wants to be genuinely formidable in AI Security within 12 months.*
+> Structured for practitioners with 3+ years of experience who want to become formidable, high-end AI Security specialists in 12 months.
 
-### Where You Stand
+Rather than teaching you how to run other people's scripts, our curriculum focuses on **architectural fundamentals, mathematical intuition, and custom exploit engineering**.
 
-With 3 years of security/ML experience, you already have:
-- A security mindset (attacker/defender thinking)
-- Working knowledge of a codebase and APIs
-- Some exposure to ML concepts
+To explore the exhaustive week-by-week syllabus, reading lists, coding tasks, and hands-on laboratory exercises, please refer to the dedicated learning modules:
 
-What you need to build:
-- Deep architectural understanding of LLMs
-- Hands-on adversarial ML intuition
-- Ability to think at the level of the threat model, not just the tool
-
----
-
-### Phase 0 — Architectural Foundation (Weeks 1–4)
-
-*Goal: Understand what you're attacking at a mechanistic level.*
-
-**Week 1–2: How Transformers Actually Work**
-- [ ] Watch [3Blue1Brown Neural Networks](https://www.youtube.com/playlist?list=PLZHQObOWTQDNU6R1_67000Dx_ZCJB-3pi) (4 hours)
-- [ ] Read [The Illustrated Transformer](https://jalammar.github.io/illustrated-transformer/) (2 hours)
-- [ ] Implement a transformer from scratch: [Karpathy's makemore series](https://www.youtube.com/playlist?list=PLAqhIrjkxbuWI23v9cThsA9GvCAUhRvKZ) (8 hours)
-- [ ] Read [Attention Is All You Need](https://arxiv.org/abs/1706.03762) — not to learn the architecture, but to see what was *not* said about safety
-
-**Week 3: The First Adversarial ML Papers**
-- [ ] Read [Intriguing Properties of Neural Networks (Szegedy, 2013)](https://arxiv.org/abs/1312.6199) — the moment adversarial examples were discovered
-- [ ] Read [Explaining and Harnessing Adversarial Examples (Goodfellow, 2014)](https://arxiv.org/abs/1412.6572) — FGSM, the foundation
-- [ ] Implement FGSM on an image classifier. *Feel* what it means to add imperceptible noise that breaks a model.
-
-**Week 4: LLM Security Context**
-- [ ] Read [Universal and Transferable Attacks (Zou et al., 2023)](https://arxiv.org/abs/2307.15043) — this is the FGSM moment for LLMs
-- [ ] Read [Jailbroken (Wei et al., 2023)](https://arxiv.org/abs/2307.02483) — the two failure modes of alignment
-- [ ] Read [Prompt Injection Against Integrated Applications (Greshake, 2023)](https://arxiv.org/abs/2302.12173) — the agentic threat model
-
----
-
-### Phase 1 — Hands-On Attacks (Weeks 5–8)
-
-*Goal: Build calluses. Every attack you understand by doing becomes intuition you keep forever.*
-
-**Week 5: CTF Time**
-- [ ] Complete all 8 levels of [Lakera Gandalf](https://gandalf.lakera.ai/) — document every technique you use
-- [ ] Do 3 challenges on [Crucible by Dreadnode](https://crucible.dreadnode.io/)
-- [ ] Participate in [HackAPrompt](https://www.hackaprompt.com/) or review past solutions
-
-**Week 6: Tool Mastery — Garak**
-- [ ] Install [garak](https://github.com/NVIDIA/garak) and run it against an LLM you control
-- [ ] Run all probe categories: `promptinject`, `jailbreak`, `knowledgegrabs`, `leakage`
-- [ ] Write a custom probe for a vulnerability you discovered in Week 5
-
-**Week 7: Tool Mastery — PyRIT**
-- [ ] Set up [PyRIT](https://github.com/microsoft/PyRIT) with an Azure or OpenAI endpoint
-- [ ] Build a multi-turn attack chain against a system prompt you define
-- [ ] Implement an orchestrator that iteratively refines attacks based on model responses
-
-**Week 8: Agentic Red Teaming**
-- [ ] Build a simple LLM agent with tool access (file read, web search)
-- [ ] Inject adversarial content into the tool responses (indirect injection)
-- [ ] Use [AgentDojo](https://github.com/ethz-spylab/agentdojo) to benchmark your findings
-
----
-
-### Phase 2 — Defense Engineering (Weeks 9–12)
-
-*Goal: You cannot build defenses you haven't broken. Now you know what to defend.*
-
-**Week 9: Guardrail Engineering**
-- [ ] Deploy [NeMo-Guardrails](https://github.com/NVIDIA/NeMo-Guardrails) + [llm-guard](https://github.com/protectai/llm-guard)
-- [ ] Attack your own guardrails. Document what bypasses them.
-- [ ] Implement [Llama Guard](https://github.com/meta-llama/PurpleLlama) as a secondary classifier
-
-**Week 10: Observability & Detection**
-- [ ] Set up [Langfuse](https://github.com/langfuse/langfuse) and instrument an LLM app
-- [ ] Implement statistical monitoring with [LangKit](https://github.com/whylabs/langkit)
-- [ ] Write an anomaly detection pipeline that flags unusual prompt patterns
-
-**Week 11: Model Scanning**
-- [ ] Use [modelscan](https://github.com/protectai/modelscan) on 10 models from Hugging Face
-- [ ] Convert a model from pickle to safetensors — understand why format matters
-- [ ] Read [Sleeper Agents (Anthropic, 2024)](https://arxiv.org/abs/2401.05566) and think through detection challenges
-
-**Week 12: Write and Share**
-- [ ] Write a blog post or GitHub report documenting an attack chain you discovered
-- [ ] Submit a finding to an AI company's vulnerability disclosure program
-- [ ] Contribute a tool, resource, or write-up to this repo
-
----
-
-### Phase 3 — Specialization (Months 4–6)
-
-Choose your path based on what energized you most in Phases 0–2:
-
-#### Path A: Research Track
-- Study [mechanistic interpretability](https://transformer-circuits.pub/) — understanding circuits enables novel attacks
-- Reproduce a paper from HarmBench or MITRE ATLAS
-- Submit to ML security workshops: [AdvML @ NeurIPS](https://advml-frontier.github.io/), [SaTML](https://satml.org/)
-
-#### Path B: Engineering Track
-- Build a CI/CD pipeline with automated red teaming (Promptfoo + garak)
-- Implement an AI security posture management (AI-SPM) system
-- Pursue [CAISP certification](https://www.aigov.institute/certifications)
-
-#### Path C: Research + Engineering (Recommended)
-- Alternate between paper reproduction and production implementation
-- Nothing keeps you grounded like shipping something real between reading papers
-
----
-
-### Phase 4 — Expert (Months 6–12)
-
-- Contribute to MITRE ATLAS (submit case studies)
-- Speak at AI Village (DEF CON) or SaTML
-- Publish a tool or dataset that others use
-- The people who get to principal/staff in this field have *something they built* that others rely on
+*   👉 **[The Definitive Zero to Hero Curriculum (ROADMAP.md)](ROADMAP.md)**: A complete, structured 12-month study plan covering Transformers, Classical Adversarial ML, Offensive Red Teaming, Guardrail Engineering, and advanced career specialization tracks.
+*   👉 **[Practical Hands-On Laboratory Handbook (LABS.md)](LABS.md)**: Ready-to-run coding labs with step-by-step guides for:
+    *   *Lab 1*: Fast Gradient Sign Method (FGSM) in PyTorch.
+    *   *Lab 2*: Crafting Direct Prompt Injections & Jailbreaks.
+    *   *Lab 3*: Indirect Prompt Injection via RAG & Tool Hijacking.
+    *   *Lab 4*: Model Supply Chain Exploitation via Malicious Pickle weights.
+    *   *Lab 5*: Implementing an Active Input/Output Guardrail Pipeline.
 
 ---
 
@@ -498,7 +397,7 @@ Choose your path based on what energized you most in Phases 0–2:
 | **[Certified AI Security Professional (CAISP)](https://www.aigov.institute/certifications)** | AI Gov Institute | Practitioner-level AI security. Best available. | 60–80 hrs |
 | **[GIAC GREM](https://www.giac.org/certifications/reverse-engineering-malware-grem/)** | SANS | Reverse engineering. Useful for model weight analysis. | 120 hrs |
 | **[Google Professional ML Engineer](https://cloud.google.com/learn/certification/machine-learning-engineer)** | Google | ML fundamentals signal. Good for bridging to employers. | 40 hrs |
-| **[AWS ML Specialty](https://aws.amazon.com/certification/certified-machine-learning-specialty/)** | AWS | Cloud ML deployment. Covers security of deployed models. | 60 hrs |
+| **[AWS ML Specialty](https://aws.amazon.com/certification/certified-learning-specialty/)** | AWS | Cloud ML deployment. Covers security of deployed models. | 60 hrs |
 | **[OSCP](https://www.offsec.com/courses/pen-200/)** | OffSec | Classic red team cert. Still matters for traditional attack context. | 200+ hrs |
 
 ---
