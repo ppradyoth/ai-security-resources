@@ -47,6 +47,8 @@ To keep this guide lightweight yet exhaustive, we maintain dedicated, highly com
 | 🏛️ **Standards & Compliance Guide** | MITRE ATLAS threat modeling, OWASP Top 10 for LLMs, NIST AI RMF, ISO 42001, and EU AI Act playbooks. | **[STANDARDS_AND_COMPLIANCE.md](STANDARDS_AND_COMPLIANCE.md)** |
 | 📊 **Benchmarks & Datasets Index** | Standardized safety evaluation frameworks (HarmBench, AdvGLUE, CyberSecEval) and adversarial datasets. | **[BENCHMARKS_AND_DATASETS.md](BENCHMARKS_AND_DATASETS.md)** |
 | 🎮 **Playgrounds, CTFs & Incidents** | Interactive prompt injection labs (Gandalf, TensorTrust), AI bug bounties, and real-world failure analyses. | **[PLAYGROUNDS_AND_LABS.md](PLAYGROUNDS_AND_LABS.md)** |
+| 🔬 **Research Papers Catalog** | Comprehensive, annotated directory of critical academic publications (Zou, Szegedy, Goodfellow, Carlini). | **[RESEARCH_PAPERS.md](RESEARCH_PAPERS.md)** |
+| 🏆 **Frontier Safety Leaderboard** | Fact-grounded comparison of GPT-4o, Claude 3.5 Sonnet, Gemini 1.5 Pro, Llama 3.1, and Grok 2 across safety Elo. | **[SAFETY_LEADERBOARD.md](SAFETY_LEADERBOARD.md)** |
 
 ---
 
