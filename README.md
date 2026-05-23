@@ -86,6 +86,13 @@ Essential reading to understand the mechanics of jailbreaks, prompt injection, a
 
 ---
 
+## 👥 Contributors & Acknowledgements
+
+*   **[@ppradyoth](https://github.com/ppradyoth)** (Lead Maintainer) — AI Red Teaming & Security Engineering.
+*   **[Antigravity 🌌](https://github.com/google-deepmind)** (AI Co-Architect) — Agentic coding assistant developed by Google DeepMind.
+
+---
+
 ## 🤝 How to Contribute
 
 We welcome contributions from security engineers, adversarial researchers, and open-source advocates! 
