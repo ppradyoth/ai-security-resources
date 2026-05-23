@@ -52,19 +52,21 @@ Here's what actually happened between the papers:
 - **2017 — "Attention Is All You Need":** Transformers. Self-attention. Parallel training. The architecture that scales infinitely.
 - **2020 — GPT-3:** 175B parameters. Few-shot learning emerges as a property. Capabilities no one designed for start appearing.
 - **2022 — ChatGPT:** 100M users in 60 days. Security teams globally had no playbook.
-- **2023 → Now:** Agents, tool use, multimodal, real-time action. The attack surface is no longer just "the model" — it's every system the model can touch.
+- **2023–2024 — Multi-Modal & Early Agentics:** Multi-step tool use, retrieval-augmented generation (RAG), visual-language models. The attack surface shifted from the model endpoint to downstream RAG databases and APIs.
+- **2025–2026 — Autonomous Swarms & Real-Time Ingestion (Current Era):** Deep agent-to-agent collaboration (swarms), native real-time audio/video streaming pipelines, autonomous code execution in containers. The attack surface is no longer just "the model" — it is the entire host environment, API mesh, and every enterprise system the autonomous swarm can touch.
 
 ### Why Risks Evolved
 
-The risks evolved because the **deployment context** changed faster than security thinking could follow:
+The risks evolved because the **deployment context and capabilities** changed faster than security thinking could follow:
 
-| Era | Model Type | Threat Surface | Primary Risk |
+| Era | Model Type & Architecture | Threat Surface / Ingestion Channels | Primary Vulnerability & Risk |
 |:---|:---|:---|:---|
-| Pre-2020 | Narrow ML classifiers | Training pipelines | Data poisoning, model evasion |
-| 2020–2022 | Foundation models | API endpoints | Prompt injection, output manipulation |
-| 2022–2023 | RLHF-aligned LLMs | Consumer products | Jailbreaks, alignment bypass |
-| 2023–2024 | RAG + Tool-use | Enterprise deployments | Indirect injection, agent hijacking |
-| 2024+ | Agentic systems | **Everything they can touch** | Autonomous exploitation, cascading failures |
+| **Pre-2020** | Narrow ML classifiers (ResNet, XGBoost) | Static training datasets, raw inputs | Data poisoning, evasion attacks, adversarial perturbation |
+| **2020–2022** | Static Foundation Models (GPT-3, early LLMs) | Raw API endpoints, direct user prompt fields | Direct prompt injection, training data extraction, model inversion |
+| **2022–2023** | RLHF-aligned LLMs (ChatGPT, Claude 2) | Public consumer web apps, system prompts | Jailbreaks, alignment bypass, prompt leaking, side-channel attacks |
+| **2023–2024** | RAG + Tool-use (Copilots, early Agents) | Integrated databases (vector DBs), external APIs, documents | Indirect prompt injection, database poisoning, tool/API hijacking |
+| **2024–2025** | Native Multimodal (GPT-4o, Gemini 1.5 Pro) | Real-time audio stream, visual input frames, live files | Cross-modal injection (steganographic audio, visual typographic exploits) |
+| **2025–2026** | **Autonomous Agent Swarms (Current)** | Container environments, host OS, microservices mesh | Sandbox escapes, self-replication, model-to-model spoofing, recursive loop hijacking |
 
 ### Zero-Day Vulnerabilities in the AI Context
 
