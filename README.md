@@ -55,6 +55,7 @@ To keep this guide lightweight yet exhaustive, we maintain dedicated, highly com
 | 🔬 **Research Papers Catalog** | Comprehensive, annotated directory of critical academic publications (Zou, Szegedy, Goodfellow, Carlini). | **[RESEARCH_PAPERS.md](RESEARCH_PAPERS.md)** |
 | 🏆 **Frontier Safety Leaderboard** | Fact-grounded comparison of GPT-4o, Claude 3.5 Sonnet, Gemini 1.5 Pro, Llama 3.1, and Grok 2 across safety Elo. | **[SAFETY_LEADERBOARD.md](SAFETY_LEADERBOARD.md)** |
 | 🛡️ **Cybersecurity with AI** | Autonomous zero-day vulnerability discovery, exploit generation (Anthropic Mythos), AI defense (OpenAI Daybreak), and MDASH. | **[CYBER_AI.md](CYBER_AI.md)** |
+| 🔗 **Related Awesome Lists** | A curated index of "Awesome" lists dedicated to AI Security, MLSecOps, LLM Safety, and Adversarial ML for deep-diving into sub-fields. | **[AWESOME_LISTS.md](AWESOME_LISTS.md)** |
 
 ---
 
