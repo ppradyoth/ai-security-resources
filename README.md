@@ -1,5 +1,10 @@
 # 🛡️ AI Security Resources
 
+[![License: MIT](https://img.shields.io/badge/License-MIT-blue.svg?style=for-the-badge)](LICENSE)
+[![GitHub](https://img.shields.io/badge/GitHub-ppradyoth%2Fai--security--resources-181717?style=for-the-badge&logo=github)](https://github.com/ppradyoth/ai-security-resources)
+[![PRs: Welcome](https://img.shields.io/badge/PRs-Welcome-brightgreen.svg?style=for-the-badge)](CONTRIBUTING.md)
+[![Guide: MLSecOps](https://img.shields.io/badge/Guide-MLSecOps-7B1FA2?style=for-the-badge)](ROADMAP.md)
+
 > **The definitive, battle-hardened guide to AI Security** — curated with the depth of a practitioner who was doing adversarial ML before it had a name.
 >
 > Built for engineers who understand that **AI is not just a product surface — it's a new attack surface.**
