@@ -508,7 +508,8 @@ For an exhaustive, deep-dive breakdown of international technical compensation, 
 ## 👥 Contributors & Acknowledgements
 
 *   **[@ppradyoth](https://github.com/ppradyoth)** (Lead Maintainer) — AI Red Teaming & Security Engineering.
-*   **[Antigravity 🌌](https://github.com/google-deepmind)** (AI Co-Architect) — Agentic coding assistant developed by Google DeepMind.
+*   **[Antigravity](https://github.com/google-deepmind)**
+*   **[Claude](https://github.com/anthropics/claude-code)**
 
 ---
 
