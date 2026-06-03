@@ -32,6 +32,7 @@ This isn't a beginner list. This is the resource you wish existed when you start
 | [⚡ Runtime Security](#-runtime-security) | Real-time inference protection, guardrails, monitoring |
 | [🧬 Inference Security](#-inference-security) | Model serving attacks, side-channels, batching exploits |
 | [🔬 Model Scanning](#-model-scanning) | Supply chain, poisoning detection, weight integrity |
+| [🚀 Latest Developments (2025-2026)](#-specialized-deep-dive-handbooks) | Tracking the cutting edge of AI cyber threats, offensive tools, and bug reports. |
 | [🌐 Others](#-others) | Governance, datasets, benchmarks, multimodal, agentic |
 | [🚀 Zero to Hero Roadmap](#-zero-to-hero-roadmap) | Structured 12-month learning path |
 | [💼 Job Opportunities](#-job-opportunities) | Where to work, what to know, salary reality |
@@ -56,6 +57,7 @@ To keep this guide lightweight yet exhaustive, we maintain dedicated, highly com
 | 🏆 **Frontier Safety Leaderboard** | Fact-grounded comparison of GPT-4o, Claude 3.5 Sonnet, Gemini 1.5 Pro, Llama 3.1, and Grok 2 across safety Elo. | **[SAFETY_LEADERBOARD.md](SAFETY_LEADERBOARD.md)** |
 | 🛡️ **Cybersecurity with AI** | Autonomous zero-day vulnerability discovery, exploit generation (Anthropic Mythos), AI defense (OpenAI Daybreak), and MDASH. | **[CYBER_AI.md](CYBER_AI.md)** |
 | 🔗 **Related Awesome Lists** | A curated index of "Awesome" lists dedicated to AI Security, MLSecOps, LLM Safety, and Adversarial ML for deep-diving into sub-fields. | **[AWESOME_LISTS.md](AWESOME_LISTS.md)** |
+| 🚀 **Latest Developments (2025-2026)** | Emerging threat trends, offensive tools (PentestGPT, GhidraGPT), and deepfakes. | **[LATEST_DEVELOPMENTS_2026.md](LATEST_DEVELOPMENTS_2026.md)** |
 
 ---
 
