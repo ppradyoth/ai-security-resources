@@ -1,0 +1,142 @@
+# 🚨 Real-World AI Security Incidents & Authoritative Guidance (2025–2026)
+
+> Most "AI security" lists are link dumps of tools. This one is different: it tracks **what actually broke in production** and **what the people who write the rules now say about it.** Every entry below is a real, disclosed incident with a CVE or a primary-source government/standards document — no vibes, no speculation.
+
+If you only read one file in this repo, the README is the map. This is the part where the theory meets a CVSS 9.3.
+
+---
+
+## 📑 Table of Contents
+
+- [Why a separate incidents file](#-why-a-separate-incidents-file)
+- [Real-World Incidents](#-real-world-incidents-disclosed-202526)
+  - [EchoLeak — the first zero-click LLM exploit](#1-echoleak--cve-2025-32711--zero-click-prompt-injection-in-microsoft-365-copilot)
+  - [The MCP breach cluster](#2-the-mcp-breach-cluster)
+- [Authoritative Guidance](#-authoritative-guidance-the-rules-caught-up)
+  - [NSA — MCP Security Design Considerations](#3-nsa-aisc--mcp-security-design-considerations-may-2026)
+  - [OWASP Top 10 for LLM Apps 2025](#4-owasp-top-10-for-llm-applications-2025)
+  - [OWASP Top 10 for Agentic Applications 2026](#5-owasp-top-10-for-agentic-applications-2026)
+- [What this means for defenders](#-what-this-means-for-defenders-opinionated)
+- [Contributing an incident](#-contributing-an-incident)
+
+---
+
+## 🧭 Why a separate incidents file
+
+Frameworks tell you what *could* go wrong. Incidents tell you what *did*. The gap between those two is where most real risk lives. The pattern across 2025–2026 is brutally consistent:
+
+**The dangerous data is no longer the user's prompt — it's the content your agent retrieves on the user's behalf.** An email, a SharePoint doc, a GitHub issue, a tool description. The model can't tell instruction from data, and the moment it has tools, "read" becomes "act."
+
+---
+
+## 💥 Real-World Incidents (Disclosed 2025–26)
+
+### 1. EchoLeak — CVE-2025-32711 — Zero-click prompt injection in Microsoft 365 Copilot
+
+The most important AI security incident disclosed so far, because it proved the theoretical was practical.
+
+| Field | Detail |
+|:---|:---|
+| **CVE** | [CVE-2025-32711](https://nvd.nist.gov/vuln/detail/CVE-2025-32711) |
+| **CVSS** | 9.3 (Critical) |
+| **Discovered by** | Aim Labs (Aim Security) |
+| **Target** | Microsoft 365 Copilot |
+| **Class** | Zero-click prompt injection → data exfiltration |
+| **Disclosure → fix** | Reported Jan 2025 · server-side fix rolled out by May 2025 · listed on June 2025 Patch Tuesday |
+| **Exploited in wild?** | No public evidence |
+
+**Why it matters:** EchoLeak is widely described as the **first real-world zero-click prompt-injection exploit against a production LLM system** ([academic write-up, arXiv:2509.10540](https://arxiv.org/html/2509.10540v1)). The attacker sends an ordinary-looking email. The victim never clicks anything. When the user later asks Copilot an unrelated question, Copilot ingests the malicious email as part of its retrieval context, follows the hidden instructions, and exfiltrates organizational data within its access scope — chat logs, OneDrive, SharePoint, Teams.
+
+Aim Security named the underlying primitive **"LLM Scope Violation"**: untrusted external input causes the model to reach across a trust boundary into privileged data it should never have mixed with that input. Note the timeline — **no customer action was required**, which is exactly why it's so instructive: the entire control surface was on the vendor's side, invisible to the enterprises actually at risk.
+
+**Read:** [The Hacker News](https://thehackernews.com/2025/06/zero-click-ai-vulnerability-exposes.html) · [Checkmarx analysis](https://checkmarx.com/zero-post/echoleak-cve-2025-32711-show-us-that-ai-security-is-challenging/) · [SOC Prime detection guidance](https://socprime.com/blog/cve-2025-32711-zero-click-ai-vulnerability/)
+
+---
+
+### 2. The MCP breach cluster
+
+As the [Model Context Protocol](https://modelcontextprotocol.io) became the default way to give agents tools in 2025, its security model lagged its adoption. A cluster of disclosures followed. A running, sourced timeline is maintained by [authzed: *A Timeline of Model Context Protocol Security Breaches*](https://authzed.com/blog/timeline-mcp-breaches); Adversa AI also publishes a recurring [MCP Security Digest](https://adversa.ai/blog/mcp-security-digest-july-2025/). Recurring themes from those primary sources:
+
+- **Tool-poisoning / indirect prompt injection** via malicious tool descriptions and tool outputs — the agent trusts what a server tells it a tool does.
+- **GitHub MCP** abuse: a poisoned public issue steering an agent into leaking data from a user's **private** repositories.
+- **SQL injection in Anthropic's reference SQLite MCP server** — present in a sample server that had been **forked 5,000+ times** before it was archived, illustrating how insecure reference code propagates downstream ([MCP Safety Audit, arXiv:2504.03767](https://arxiv.org/pdf/2504.03767)).
+- **No-auth-by-default servers**: many production MCP servers ship with authentication entirely optional (see NSA guidance below).
+
+**The lesson:** treat every MCP server — especially dynamically discovered ones — as untrusted code *and* an untrusted input channel at the same time.
+
+---
+
+## 📜 Authoritative Guidance (the rules caught up)
+
+### 3. NSA AISC — MCP Security Design Considerations (May 2026)
+
+On **May 20, 2026**, the NSA's Artificial Intelligence Security Center released a Cybersecurity Information Sheet, *"Model Context Protocol (MCP): Security Design Considerations for AI-Driven Automation."*
+
+| Field | Detail |
+|:---|:---|
+| **Publisher** | NSA Artificial Intelligence Security Center (AISC) |
+| **Type** | Cybersecurity Information Sheet (CSI), public release |
+| **ID** | U/OO/6030316-26 · PP-26-1834 · v1.0 · ~17 pp. |
+| **PDF** | [nsa.gov — CSI_MCP_SECURITY.pdf](https://www.nsa.gov/Portals/75/documents/Cybersecurity/CSI_MCP_SECURITY.pdf) |
+| **Announcement** | [NSA press release](https://www.nsa.gov/Press-Room/Press-Releases-Statements/Press-Release-View/Article/4496698/nsa-releases-security-design-considerations-for-ai-driven-automation-leveraging/) |
+
+**Core finding:** MCP's proliferation outpaced its security model. Like early web protocols, it shipped flexible and underspecified — no required authentication, no built-in role-based access control, and no defined mapping from a session to a verifiable identity.
+
+**Headline recommendations:**
+- Treat **every MCP session as untrusted until explicitly verified.**
+- Enforce **least-privilege tokens per action and per tool** — not one broad token per agent.
+- Require **signed provenance** for any dynamically discovered MCP server.
+- Put a **filtering outgoing proxy / enterprise DLP** in front of external MCP connections; pin resource URLs and access methods tightly.
+- **Log every tool action in detail** — what tool, requested by whom, and the result.
+
+---
+
+### 4. OWASP Top 10 for LLM Applications 2025
+
+The [OWASP GenAI Security Project](https://genai.owasp.org/llm-top-10/) refreshed the LLM Top 10 for 2025. Notable changes versus the prior list:
+
+- **New — LLM07: System Prompt Leakage.** Formal recognition that system prompts get extracted and shouldn't hold secrets.
+- **New — LLM08: Vector & Embedding Weaknesses.** RAG- and embedding-specific risks (poisoning, inversion, cross-tenant leakage) get their own slot.
+- **Expanded — Excessive Agency,** reflecting the shift toward tool-using, agentic deployments.
+- Prompt Injection, Sensitive Information Disclosure, and Supply Chain remain top-tier.
+
+Red-team mapping: frameworks like [DeepTeam](https://www.trydeepteam.com/docs/frameworks-owasp-top-10-for-llms) implement these categories as runnable test suites.
+
+---
+
+### 5. OWASP Top 10 for Agentic Applications 2026
+
+Released **December 9, 2025** with input from 100+ security researchers and practitioners, this is the first OWASP Top 10 dedicated to **autonomous and multi-agent** systems ([announcement](https://genai.owasp.org/2025/12/09/owasp-genai-security-project-releases-top-10-risks-and-mitigations-for-agentic-ai-security/) · [resource page](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/)). It targets risks that only exist once a model can plan, delegate, and act:
+
+- **Agent goal / instruction hijacking** — redirecting an agent's objective mid-task.
+- **Tool misuse and exploitation** — abusing legitimately granted tools.
+- **Memory and context poisoning** — corrupting persistent state so the attack survives across sessions.
+- Risks arising specifically from **autonomous decision-making, delegation, and tool integration.**
+
+If you build agents, this list — not the LLM Top 10 — is now your baseline. A runnable mapping exists in [DeepTeam's agentic framework docs](https://www.trydeepteam.com/docs/frameworks-owasp-top-10-for-agentic-applications).
+
+---
+
+## 🧠 What this means for defenders (opinionated)
+
+1. **Stop trusting retrieved content.** The user's prompt was never the main threat. Email, docs, issues, tool outputs, and tool *descriptions* are all attacker-controllable input. Untrusted-by-default is the only safe posture.
+2. **"Read-only" is a lie once tools exist.** EchoLeak weaponized a system that was "just summarizing email." The moment an agent can retrieve and act, every read path is a potential exfiltration path.
+3. **Least privilege per tool, not per agent.** The NSA guidance is blunt about this for a reason: one broad token is one breach away from everything.
+4. **Log tool calls like you log auth.** You cannot investigate what you didn't record. Tool name + caller + arguments + result, every time.
+5. **Insecure reference code is a supply-chain vector.** A vulnerable sample server forked thousands of times is a fleet of vulnerable production servers. Audit what you copy.
+
+---
+
+## 🤝 Contributing an incident
+
+Have a verified, disclosed AI security incident or an authoritative guidance document to add? Open a PR. The bar is simple and non-negotiable:
+
+- ✅ A **CVE**, a **primary-source advisory**, or an **official standards/government document** — linked.
+- ✅ Dates and attribution you can stand behind.
+- ❌ No "I heard that…", no unverified blog claims, no speculation.
+
+See [CONTRIBUTING.md](CONTRIBUTING.md).
+
+---
+
+<sub>Part of [ai-security-resources](README.md). Maintained with [Claude Code](https://claude.ai/code) — see the [autonomous agent experiment](https://github.com/ppradyoth/social-experiment-with-agents).</sub>
