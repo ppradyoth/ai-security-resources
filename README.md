@@ -26,6 +26,7 @@ This isn't a beginner list. This is the resource you wish existed when you start
 
 | Domain | Description |
 |:---|:---|
+| [🚀 Getting Started (60-min on-ramp)](GETTING_STARTED.md) | New here? Zero to your first hands-on LLM exploit in under an hour |
 | [🧠 Why This Matters — The Origin Story](#-why-this-matters--the-origin-story) | History of risks, neural networks, why this field exists |
 | [🔩 Foundational Knowledge](#-foundational-knowledge) | Neural networks, transformers, zero-days, pace of growth |
 | [🔴 Red Teaming](#-red-teaming) | Adversarial attacks, jailbreaks, prompt injection |
@@ -45,6 +46,7 @@ To keep this guide lightweight yet exhaustive, we maintain dedicated, highly com
 
 | Handbook | Core Scope | Link |
 |:---|:---|:---|
+| 🚀 **Getting Started** | The 60-minute on-ramp for security/ML folks: one mental model, a hands-on Gandalf + garak win, and a track-by-track next step. Start here. | **[GETTING_STARTED.md](GETTING_STARTED.md)** |
 | 💼 **Global Salary Handbook** | Exhaustive country-by-country comp rates (US, IN, UK, IE, SG, AU, ME, EU), tax brackets, rent crises, and career strategies. | **[SALARY_REALITY.md](SALARY_REALITY.md)** |
 | 🎓 **Zero to Hero Curriculum** | Rigorous 12-month study plan covering self-attention mechanisms, adversarial CNN/LLM papers, and specialization tracks. | **[ROADMAP.md](ROADMAP.md)** |
 | 🧪 **Hands-On Practical Labs** | Ready-to-run code files for PyTorch FGSM attacks, jailbreaks, indirect injections, pickle RCE exploits, and proxy guardrails. | **[LABS.md](LABS.md)** |
