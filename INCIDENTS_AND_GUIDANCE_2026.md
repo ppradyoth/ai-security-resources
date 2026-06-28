@@ -12,10 +12,12 @@ If you only read one file in this repo, the README is the map. This is the part 
 - [Real-World Incidents](#-real-world-incidents-disclosed-202526)
   - [EchoLeak — the first zero-click LLM exploit](#1-echoleak--cve-2025-32711--zero-click-prompt-injection-in-microsoft-365-copilot)
   - [The MCP breach cluster](#2-the-mcp-breach-cluster)
+  - [CometJacking — prompt injection in an agentic AI browser](#3-cometjacking--indirect-prompt-injection-in-an-agentic-ai-browser)
+  - [ServiceNow Now Assist — second-order prompt injection](#4-servicenow-now-assist--second-order-prompt-injection-via-agent-to-agent-discovery)
 - [Authoritative Guidance](#-authoritative-guidance-the-rules-caught-up)
-  - [NSA — MCP Security Design Considerations](#3-nsa-aisc--mcp-security-design-considerations-may-2026)
-  - [OWASP Top 10 for LLM Apps 2025](#4-owasp-top-10-for-llm-applications-2025)
-  - [OWASP Top 10 for Agentic Applications 2026](#5-owasp-top-10-for-agentic-applications-2026)
+  - [NSA — MCP Security Design Considerations](#5-nsa-aisc--mcp-security-design-considerations-may-2026)
+  - [OWASP Top 10 for LLM Apps 2025](#6-owasp-top-10-for-llm-applications-2025)
+  - [OWASP Top 10 for Agentic Applications 2026](#7-owasp-top-10-for-agentic-applications-2026)
 - [What this means for defenders](#-what-this-means-for-defenders-opinionated)
 - [Contributing an incident](#-contributing-an-incident)
 
@@ -66,9 +68,49 @@ As the [Model Context Protocol](https://modelcontextprotocol.io) became the defa
 
 ---
 
+### 3. CometJacking — indirect prompt injection in an agentic AI browser
+
+The 2026 frontier of the EchoLeak pattern: the *browser itself* is the agent, and a single link is the payload.
+
+| Field | Detail |
+|:---|:---|
+| **Discovered by** | LayerX Security |
+| **Disclosed** | October 2025 |
+| **Target** | Perplexity **Comet** (agentic AI browser) |
+| **Class** | Indirect prompt injection → connector data exfiltration |
+| **Exploited in wild?** | No public evidence; demonstrated by researchers |
+
+**Why it matters:** Comet, like other agentic browsers, holds *pre-authorized* access to a user's connected services (Gmail, Google Calendar). CometJacking smuggles malicious instructions through a URL query parameter (the `collection` parameter). When the victim clicks the link, the browser-agent treats the URL's hidden prompt as an instruction rather than as content to *browse* — reads from its memory and connected accounts, then **base64-encodes the data before exfiltrating** it to an attacker endpoint. The encoding step is the interesting part: Perplexity had guardrails against *direct* exfiltration of sensitive memory, but obfuscating the payload first walked straight past them — a reminder that output filters keyed on plaintext don't survive an attacker who controls the encoding.
+
+This is EchoLeak's "the dangerous data is the content your agent retrieves" thesis, moved one layer up the stack: now the agent *is the browser*, the connectors *are* the privileged data, and the malicious content is a link a user is socially-engineered into clicking. Brave's research team independently documented the same indirect-prompt-injection class in Comet.
+
+**Read:** [The Hacker News](https://thehackernews.com/2025/10/cometjacking-one-click-can-turn.html) · [LayerX writeup](https://layerxsecurity.com/blog/cometjacking-how-one-click-can-turn-perplexitys-comet-ai-browser-against-you/) · [Brave — indirect prompt injection in Comet](https://brave.com/blog/comet-prompt-injection/) · [Schneier on Security](https://www.schneier.com/blog/archives/2025/11/prompt-injection-in-ai-browsers.html)
+
+---
+
+### 4. ServiceNow Now Assist — second-order prompt injection via agent-to-agent discovery
+
+The first widely-reported demonstration that **agent-to-agent** features turn one compromised agent into a recruiter for more privileged ones.
+
+| Field | Detail |
+|:---|:---|
+| **Discovered by** | AppOmni (AO Labs) |
+| **Disclosed** | November 2025 |
+| **Target** | ServiceNow **Now Assist** AI agents |
+| **Class** | Second-order prompt injection → privilege escalation, data exfiltration, record tampering |
+| **Status** | ServiceNow confirmed the behaviors as **intended and configuration-controllable**; on-platform documentation was updated for clarity |
+
+**Why it matters:** Second-order prompt injection hides the payload not in a user's prompt but in **data a higher-privileged agent will later read** — a record field a low-privileged user can write. AppOmni showed that a benign Now Assist agent, once steered, could use Now Assist's **agent-to-agent discovery** to *recruit more powerful agents* to copy and exfiltrate sensitive data, modify records, and escalate privileges. Crucially, the attack was enabled entirely by **controllable configuration** (tool setup options, channel-specific defaults) — not a memory-corruption bug — which is why ServiceNow classified the behavior as intended rather than issuing a CVE for it. *(Separately, ServiceNow patched [CVE-2025-12420](https://cyberscoop.com/servicenow-fixes-critical-ai-vulnerability-cve-2025-12420/), a distinct critical Now Assist flaw enabling unauthenticated user impersonation — don't conflate the two.)*
+
+**The lesson:** in a multi-agent deployment, the blast radius of a single injected instruction is not one agent's privileges — it's the union of every agent the first one can discover and delegate to. Default-deny on agent-to-agent delegation, and treat any field a low-trust user can write as an injection channel.
+
+**Read:** [AppOmni — AO Labs research](https://appomni.com/ao-labs/ai-agent-to-agent-discovery-prompt-injection/) · [The Hacker News](https://thehackernews.com/2025/11/servicenow-ai-agents-can-be-tricked.html) · [TechRadar](https://www.techradar.com/pro/security/second-order-prompt-injection-can-turn-ai-into-a-malicious-insider)
+
+---
+
 ## 📜 Authoritative Guidance (the rules caught up)
 
-### 3. NSA AISC — MCP Security Design Considerations (May 2026)
+### 5. NSA AISC — MCP Security Design Considerations (May 2026)
 
 On **May 20, 2026**, the NSA's Artificial Intelligence Security Center released a Cybersecurity Information Sheet, *"Model Context Protocol (MCP): Security Design Considerations for AI-Driven Automation."*
 
@@ -91,7 +133,7 @@ On **May 20, 2026**, the NSA's Artificial Intelligence Security Center released 
 
 ---
 
-### 4. OWASP Top 10 for LLM Applications 2025
+### 6. OWASP Top 10 for LLM Applications 2025
 
 The [OWASP GenAI Security Project](https://genai.owasp.org/llm-top-10/) refreshed the LLM Top 10 for 2025. Notable changes versus the prior list:
 
@@ -104,7 +146,7 @@ Red-team mapping: frameworks like [DeepTeam](https://www.trydeepteam.com/docs/fr
 
 ---
 
-### 5. OWASP Top 10 for Agentic Applications 2026
+### 7. OWASP Top 10 for Agentic Applications 2026
 
 Released **December 9, 2025** with input from 100+ security researchers and practitioners, this is the first OWASP Top 10 dedicated to **autonomous and multi-agent** systems ([announcement](https://genai.owasp.org/2025/12/09/owasp-genai-security-project-releases-top-10-risks-and-mitigations-for-agentic-ai-security/) · [resource page](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/)). It targets risks that only exist once a model can plan, delegate, and act:
 
