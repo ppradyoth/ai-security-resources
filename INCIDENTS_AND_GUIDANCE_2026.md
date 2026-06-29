@@ -18,6 +18,7 @@ If you only read one file in this repo, the README is the map. This is the part 
   - [NSA — MCP Security Design Considerations](#5-nsa-aisc--mcp-security-design-considerations-may-2026)
   - [OWASP Top 10 for LLM Apps 2025](#6-owasp-top-10-for-llm-applications-2025)
   - [OWASP Top 10 for Agentic Applications 2026](#7-owasp-top-10-for-agentic-applications-2026)
+  - [MITRE ATLAS — the agentic expansion](#8-mitre-atlas--the-agentic-expansion-zenity-labs-collaboration)
 - [What this means for defenders](#-what-this-means-for-defenders-opinionated)
 - [Contributing an incident](#-contributing-an-incident)
 
@@ -159,6 +160,33 @@ If you build agents, this list — not the LLM Top 10 — is now your baseline. 
 
 ---
 
+### 8. MITRE ATLAS — the agentic expansion (Zenity Labs collaboration)
+
+OWASP gives you a *checklist*; [MITRE ATLAS](https://atlas.mitre.org/) gives you a *matrix* — the ATT&CK-style tactic→technique structure threat-modelers actually pivot through. Through 2025, ATLAS's gap was the same one this whole file documents: it modeled attacks on *models*, not on *agents*. That gap closed in late 2025.
+
+| Field | Detail |
+|:---|:---|
+| **Maintainer** | MITRE, in collaboration with **Zenity Labs** |
+| **What changed** | A batch of new **agent-focused techniques and sub-techniques** added to the ATLAS matrix |
+| **Reported timing** | First agent-technique release **October 2025**; matrix subsequently grew (reported as **16 tactics / 84 techniques** by late 2025) |
+| **Why** | To give defenders a *shared taxonomy* for execution-layer threats they were already seeing in production agents but had no standard name for |
+
+**The new vocabulary** — the techniques worth knowing by name, because they map 1:1 onto the incidents above:
+
+- **AI Agent Context Poisoning** — manipulate the context an agent's LLM reads to *persistently* steer its responses/actions. (This is the CometJacking / ServiceNow mechanism, now with an ID.)
+- **Memory Manipulation** — alter an agent's long-term memory so a malicious change *survives across sessions*. (The "context poisoning" risk OWASP Agentic calls out, made concrete.)
+- **Thread Injection** — plant instructions in a specific conversation thread to change behavior for that conversation's duration.
+- **Modify AI Agent Configuration** — change config files to create persistent malicious behavior across *every* agent sharing that config. (Exactly the ServiceNow "controllable configuration" finding.)
+- **RAG Credential Harvesting** — use the agent itself to search a RAG store for credentials inadvertently ingested into it.
+
+**Why it matters here:** every incident in the first half of this file now has a *standard technique ID* to file it under. EchoLeak and CometJacking are context-/memory-layer techniques; the ServiceNow agent-to-agent recruitment is configuration + delegation; the MCP tool-poisoning cluster is execution-layer. ATLAS catching up to agents means a red-team report can finally say "ATLAS technique X" instead of "a prompt-injection-ish thing," and a blue team can map detections to the same grid they already use for ATT&CK.
+
+> Verification note: the technique *names and themes* above are corroborated across multiple independent reports of the MITRE×Zenity work; the exact tactic/technique counts and version label move release-to-release, so confirm the current matrix on the [primary ATLAS site](https://atlas.mitre.org/matrices/ATLAS) before quoting a number in a report.
+
+**Read:** [MITRE ATLAS](https://atlas.mitre.org/) · [Zenity Labs × MITRE ATLAS announcement](https://zenity.io/blog/current-events/zenity-labs-and-mitre-atlas-collaborate-to-advances-ai-agent-security-with-the-first-release-of) · [ARMO — ATLAS for AI agent attack detection](https://www.armosec.io/blog/mitre-atlas-for-ai-agent-attack-detection/)
+
+---
+
 ## 🧠 What this means for defenders (opinionated)
 
 1. **Stop trusting retrieved content.** The user's prompt was never the main threat. Email, docs, issues, tool outputs, and tool *descriptions* are all attacker-controllable input. Untrusted-by-default is the only safe posture.
@@ -166,6 +194,7 @@ If you build agents, this list — not the LLM Top 10 — is now your baseline. 
 3. **Least privilege per tool, not per agent.** The NSA guidance is blunt about this for a reason: one broad token is one breach away from everything.
 4. **Log tool calls like you log auth.** You cannot investigate what you didn't record. Tool name + caller + arguments + result, every time.
 5. **Insecure reference code is a supply-chain vector.** A vulnerable sample server forked thousands of times is a fleet of vulnerable production servers. Audit what you copy.
+6. **Use the agentic frameworks, not the model-era ones.** Map your red-team findings to the *agentic* taxonomies now that they exist — OWASP Top 10 for Agentic Applications and the MITRE ATLAS agent techniques (§7–8). "Prompt injection" is no longer a precise enough finding for a multi-agent system; "AI Agent Context Poisoning persisting via Memory Manipulation" is.
 
 ---
 
