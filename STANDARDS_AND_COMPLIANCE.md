@@ -53,6 +53,23 @@ The [OWASP Top 10 for LLM Applications](https://owasp.org/www-project-top-10-for
 
 ---
 
+## 🎯 OWASP GenAI Red Teaming Guide
+
+The Top 10 tells you *what* can go wrong; the [**OWASP GenAI Red Teaming Guide**](https://genai.owasp.org/resource/genai-red-teaming-guide/) (first version released [January 2025](https://genai.owasp.org/2025/01/22/announcing-the-owasp-gen-ai-red-teaming-guide/)) is the OWASP Gen AI Security Project's structured, risk-based methodology for *actively finding* it. Its core contribution is refusing to treat "red teaming an LLM" as "type jailbreak prompts until one works." Instead it frames the exercise as a **holistic, four-phase evaluation** — because a model that passes prompt-level testing can still be trivially exploited through its deployment pipeline, its surrounding infrastructure, or its emergent behavior once tools and memory are attached.
+
+| Phase | What it evaluates | Why a single-layer test misses it |
+|:---|:---|:---|
+| **1. Model evaluation** | The model itself — alignment gaps, jailbreak susceptibility, bias, unsafe generation, training-data leakage. | This is where most "red teaming" stops. Necessary, but blind to everything the model is wired into. |
+| **2. Implementation testing** | The application layer wrapped around the model — system-prompt defenses, guardrails, input/output handling, integration logic. | Maps directly to OWASP **LLM01/LLM02/LLM07**: the model can be fine, but the glue code leaks or executes untrusted output. |
+| **3. Infrastructure assessment** | The deployment stack — model registries, serving infra, supply chain, secrets, access control around the inference endpoint. | Covers **LLM05/LLM10**: weight exfiltration and supply-chain compromise never show up in a prompt-only test. |
+| **4. Runtime behavior analysis** | The live, in-production system — agentic tool use, memory, multi-turn drift, and emergent behavior under real traffic. | This is where **agentic** risk lives (excessive agency, indirect injection via tools, context poisoning) — invisible to any static, pre-deployment check. |
+
+**Why it belongs in this repo:** it is the connective tissue between the *taxonomy* (OWASP Top 10, above) and the *tooling* ([TOOLS.md](TOOLS.md): garak, PyRIT, promptfoo) — a phase model for deciding *which* tool to point at *which* layer. It also aligns cleanly with the [MITRE ATLAS](#-mitre-atlas-adversarial-threat-landscape-for-artificial-intelligence-systems) tactics above (phases 1–2 ≈ model/ML-attack tactics; phases 3–4 ≈ the agentic and infrastructure techniques) and with the real-world failures in [INCIDENTS_AND_GUIDANCE_2026.md](INCIDENTS_AND_GUIDANCE_2026.md) — EchoLeak and CometJacking are precisely the phase-4 runtime/agentic failures a model-only red team would never surface.
+
+> **Audience:** the guide explicitly targets a broad set of roles — security engineers, AI/ML engineers, red-team practitioners, risk managers, and business leaders — so it doubles as a shared-vocabulary document for getting a whole org aligned on what "we red-teamed it" actually means. Confirm the current version and any phase-naming updates on the [primary resource page](https://genai.owasp.org/resource/genai-red-teaming-guide/) before quoting it in formal work.
+
+---
+
 ## 🏛️ NIST Artificial Intelligence Risk Management Framework (NIST AI RMF 1.0)
 
 Released by the U.S. National Institute of Standards and Technology, the [NIST AI RMF](https://www.nist.gov/itl/ai-risk-management-framework) is a voluntary organizational framework designed to help enterprises design, deploy, and govern trustworthy and secure AI systems.

@@ -51,7 +51,7 @@ To keep this guide lightweight yet exhaustive, we maintain dedicated, highly com
 | 🎓 **Zero to Hero Curriculum** | Rigorous 12-month study plan covering self-attention mechanisms, adversarial CNN/LLM papers, and specialization tracks. | **[ROADMAP.md](ROADMAP.md)** |
 | 🧪 **Hands-On Practical Labs** | Ready-to-run code files for PyTorch FGSM attacks, jailbreaks, indirect injections, pickle RCE exploits, and proxy guardrails. | **[LABS.md](LABS.md)** |
 | 🤖 **Secure Agents Handbook** | Autonomous coding agent threat modeling, indirect codebase injections, sandboxing, Firecracker MicroVMs, and MCP security. | **[AGENT_SECURITY.md](AGENT_SECURITY.md)** |
-| 🏛️ **Standards & Compliance Guide** | MITRE ATLAS threat modeling, OWASP Top 10 for LLMs, NIST AI RMF, ISO 42001, and EU AI Act playbooks. | **[STANDARDS_AND_COMPLIANCE.md](STANDARDS_AND_COMPLIANCE.md)** |
+| 🏛️ **Standards & Compliance Guide** | MITRE ATLAS threat modeling, OWASP Top 10 for LLMs, the OWASP GenAI Red Teaming Guide (four-phase methodology), NIST AI RMF, ISO 42001, and EU AI Act playbooks. | **[STANDARDS_AND_COMPLIANCE.md](STANDARDS_AND_COMPLIANCE.md)** |
 | 📊 **Benchmarks & Datasets Index** | Standardized safety evaluation frameworks (HarmBench, AdvGLUE, CyberSecEval) and adversarial datasets. | **[BENCHMARKS_AND_DATASETS.md](BENCHMARKS_AND_DATASETS.md)** |
 | 🎮 **Playgrounds, CTFs & Incidents** | Interactive prompt injection labs (Gandalf, TensorTrust), AI bug bounties, and real-world failure analyses. | **[PLAYGROUNDS_AND_LABS.md](PLAYGROUNDS_AND_LABS.md)** |
 | 🚨 **Incidents & Guidance (2025–26)** | Disclosed real-world incidents — EchoLeak (CVE-2025-32711), the MCP breach cluster, CometJacking (agentic-browser injection), and ServiceNow Now Assist agent-to-agent injection — plus authoritative guidance (NSA AISC MCP CSI, OWASP Top 10 for LLMs 2025 & Agentic 2026, and the MITRE ATLAS agent-technique expansion). | **[INCIDENTS_AND_GUIDANCE_2026.md](INCIDENTS_AND_GUIDANCE_2026.md)** |
@@ -216,6 +216,7 @@ Red teaming AI is not the same as red teaming software. You are not looking for 
 |:---|:---|:---|
 | **[MITRE ATLAS](https://atlas.mitre.org/)** | MITRE | Adversarial Threat Landscape for AI Systems. ATT&CK-style matrix for AI-specific TTPs. Use this to structure threat models. |
 | **[OWASP Top 10 for LLM Applications 2025](https://owasp.org/www-project-top-10-for-large-language-model-applications/)** | OWASP | Updated 2025 version. Prompt Injection #1, Excessive Agency #2. The compliance framework for enterprise red teams. |
+| **[OWASP GenAI Red Teaming Guide](https://genai.owasp.org/resource/genai-red-teaming-guide/)** | OWASP | Released Jan 2025. Structured, risk-based methodology across **four phases** — model, implementation, infrastructure, runtime. Stops red teaming from meaning "just try jailbreaks." See the [breakdown in STANDARDS_AND_COMPLIANCE.md](STANDARDS_AND_COMPLIANCE.md#-owasp-genai-red-teaming-guide). |
 | **[Microsoft AI Red Team Practices](https://learn.microsoft.com/en-us/security/ai-red-team/ai-red-team)** | Microsoft | Internal red team methodology made public. Structured approach to AI threat modeling. |
 | **[Anthropic's Responsible Scaling Policy](https://www.anthropic.com/news/anthropics-responsible-scaling-policy)** | Anthropic | How frontier labs operationalize red teaming as a deployment gate. Required reading for policy context. |
 | **[Google's AI Red Team Report](https://services.google.com/fh/files/blogs/google-ai-red-team-digital-final.pdf)** | Google | Case studies of real red team findings against deployed systems. |
@@ -355,7 +356,7 @@ This section covers critical elements of the broader AI security landscape: stan
 
 To explore these domains in exhaustive detail without cluttering this README, we maintain dedicated practitioner handbooks:
 
-*   👉 **[AI Security Standards & Compliance Guide (STANDARDS_AND_COMPLIANCE.md)](STANDARDS_AND_COMPLIANCE.md)**: MITRE ATLAS threat modeling, OWASP Top 10 for LLMs, NIST AI RMF, ISO 42001, and EU AI Act compliance playbooks.
+*   👉 **[AI Security Standards & Compliance Guide (STANDARDS_AND_COMPLIANCE.md)](STANDARDS_AND_COMPLIANCE.md)**: MITRE ATLAS threat modeling, OWASP Top 10 for LLMs, the OWASP GenAI Red Teaming Guide (four-phase methodology), NIST AI RMF, ISO 42001, and EU AI Act compliance playbooks.
 *   👉 **[Benchmarks & Datasets Index (BENCHMARKS_AND_DATASETS.md)](BENCHMARKS_AND_DATASETS.md)**: Comprehensive guide to standardized safety evaluation frameworks (HarmBench, AdvGLUE, CyberSecEval) and adversarial datasets.
 *   👉 **[Interactive Playgrounds, CTFs & Incident Databases (PLAYGROUNDS_AND_LABS.md)](PLAYGROUNDS_AND_LABS.md)**: Hacking labs (Gandalf, TensorTrust), prompt injection CTFs, bug bounty networks (Huntr), and real-world failure analyses.
 
