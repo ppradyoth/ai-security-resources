@@ -12,6 +12,8 @@ If you only read one file in this repo, the README is the map. This is the part 
 - [Real-World Incidents](#-real-world-incidents-disclosed-202526)
   - [EchoLeak — the first zero-click LLM exploit](#1-echoleak--cve-2025-32711--zero-click-prompt-injection-in-microsoft-365-copilot)
   - [The MCP breach cluster](#2-the-mcp-breach-cluster)
+    - [Named, high-severity MCP CVEs](#named-high-severity-mcp-cves-the-cluster-with-cve-ids)
+    - [The first malicious MCP server in the wild — postmark-mcp](#the-first-malicious-mcp-server-found-in-the-wild--postmark-mcp)
   - [CometJacking — prompt injection in an agentic AI browser](#3-cometjacking--indirect-prompt-injection-in-an-agentic-ai-browser)
   - [ServiceNow Now Assist — second-order prompt injection](#4-servicenow-now-assist--second-order-prompt-injection-via-agent-to-agent-discovery)
 - [Authoritative Guidance](#-authoritative-guidance-the-rules-caught-up)
@@ -65,7 +67,24 @@ As the [Model Context Protocol](https://modelcontextprotocol.io) became the defa
 - **SQL injection in Anthropic's reference SQLite MCP server** — present in a sample server that had been **forked 5,000+ times** before it was archived, illustrating how insecure reference code propagates downstream ([MCP Safety Audit, arXiv:2504.03767](https://arxiv.org/pdf/2504.03767)).
 - **No-auth-by-default servers**: many production MCP servers ship with authentication entirely optional (see NSA guidance below).
 
-**The lesson:** treat every MCP server — especially dynamically discovered ones — as untrusted code *and* an untrusted input channel at the same time.
+#### Named, high-severity MCP CVEs (the cluster, with CVE IDs)
+
+The bullets above are the *classes*; these are the disclosed, patched CVEs that make them concrete. Two are critical RCE in **first-party / near-first-party tooling** — i.e. the bugs were in the plumbing developers were told to use, not in some fringe server.
+
+| CVE | Component | CVSS | Class | Discovered by | Fixed in |
+|:---|:---|:---|:---|:---|:---|
+| [CVE-2025-49596](https://nvd.nist.gov/vuln/detail/CVE-2025-49596) | **MCP Inspector** (Anthropic's official debug tool) | 9.4 | No-auth proxy → RCE, chainable with **DNS rebinding** for drive-by exploitation from a malicious website | [Oligo Security](https://www.oligo.security/blog/critical-rce-vulnerability-in-anthropic-mcp-inspector-cve-2025-49596) | `0.14.1` (Jun 13 2025) |
+| [CVE-2025-6514](https://nvd.nist.gov/vuln/detail/CVE-2025-6514) | **mcp-remote** (npm client, 437k+ downloads) | 9.6 | A malicious server returns a crafted `authorization_endpoint` that reaches `open()` → **OS command injection** on the client | Or Peles, [JFrog Security Research](https://research.jfrog.com/vulnerabilities/mcp-remote-command-injection-rce-jfsa-2025-001290844/) | `0.1.16` (affects 0.0.5–0.1.15) |
+
+Both invert the usual threat model: it's the **client / tooling** that gets popped by a server it connects to — exactly the "an MCP server is an untrusted input channel" thesis, now with a CVSS. MCP Inspector's flaw was live from a *browser* via DNS rebinding to `127.0.0.1:6277`; mcp-remote's triggered the moment a client connected to an attacker's server. (Broader ecosystem sweeps have since mapped many more — e.g. OX Security's and Cloud Security Alliance's MCP RCE advisories — but pin exact counts to the primary report, as they move.)
+
+#### The first malicious MCP server found in the wild — `postmark-mcp`
+
+In **September 2025**, [Koi Security](https://www.koi.ai/blog/postmark-mcp-npm-malicious-backdoor-email-theft) documented what is widely reported as the **first malicious MCP server caught in the wild.** An npm package `postmark-mcp` impersonated Postmark's legitimate email tooling and behaved perfectly for **fifteen clean versions (1.0.0–1.0.15)** — building adoption and trust — before version **1.0.16 (published Sept 17 2025)** added a **one-line backdoor** that silently **BCC'd every outgoing email** to an attacker-controlled address. It was downloaded ~**1,600 times** before removal; because MCP servers run with broad, pre-granted permissions, the exposed mail plausibly included password resets, invoices, and internal memos. Postmark (the real vendor) [confirmed the package was an impersonation](https://postmarkapp.com/blog/information-regarding-malicious-postmark-mcp-package), not their official release.
+
+Why it's a milestone: the MCP threats above were mostly *researcher demonstrations*. `postmark-mcp` is the moment the **supply-chain-via-MCP** risk stopped being theoretical — a trusted-then-turned dependency, the classic npm playbook, now aimed at agents. The fifteen-clean-versions patience is the tell: provenance and version-pinning matter as much for MCP servers as for any other dependency.
+
+**The lesson:** treat every MCP server — especially dynamically discovered ones — as untrusted code *and* an untrusted input channel at the same time. And note the two directions of attack now both have real CVEs/cases behind them: a malicious **server** can pop your **client** (CVE-2025-6514), your own debug **tooling** can be driven from a **web page** (CVE-2025-49596), and a **trusted package** can turn on you after the fact (`postmark-mcp`).
 
 ---
 
