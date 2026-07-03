@@ -70,6 +70,22 @@ The Top 10 tells you *what* can go wrong; the [**OWASP GenAI Red Teaming Guide**
 
 ---
 
+## 🧭 OWASP GenAI Security Solutions Landscapes (Q2 2026) — including the first Red Teaming Landscape
+
+The Red Teaming *Guide* (above) tells you **how to test**; the **Solutions Landscapes** tell you **what to test *with*** — they map the actual tooling ecosystem, open-source and commercial, onto the AI lifecycle so you can see which stage each tool covers and where the gaps are. Ahead of RSA 2026, the OWASP Gen AI Security Project [expanded this line of work](https://genai.owasp.org/2026/03/17/owasp-genai-security-project-expands-ai-security-frameworks-ahead-of-rsa-2026-celebrates-continued-sponsor-support/) into a **trio of Q2 2026 landscapes** — and, notably, its **first dedicated Red Teaming Landscape**:
+
+| Landscape | What it maps | Why it matters here |
+|:---|:---|:---|
+| [**LLM & GenAI Security Solutions Landscape**](https://genai.owasp.org/resource/llm-and-generative-ai-security-solutions-landscape/) | The tooling ecosystem across the full LLM/GenAI lifecycle — development, testing, deployment, governance. | The "what exists to defend this" companion to the OWASP Top 10's "what can go wrong." |
+| [**Agentic AI Security Solutions Landscape (Q2 2026)**](https://genai.owasp.org/resource/ai-security-solutions-landscape-for-agentic-ai-q2-2026/) | Solutions across the **agentic** lifecycle, framed at the **DevOps–SecOps intersection** and tied to the Agentic AI Threats & Mitigations guide and SecOps tasks. | Agentic risk (privilege escalation, tool abuse, memory/context poisoning) needs *agent-aware* tooling — this is the map of it. |
+| [**AI & Agentic Red Teaming Landscape (Q2 2026)**](https://genai.owasp.org/resource/ai-security-solutions-landscape-for-ai-and-agentic-red-teaming-q2-2026/) — *the first of its kind* | A structured, lifecycle-wide **agentic red teaming taxonomy** for identifying, measuring, mitigating, and governing AI risk via coordinated adversarial testing, defensive validation, and continuous feedback loops. | Turns "red teaming" from a one-off prompt exercise into a **continuous, lifecycle discipline** with a shared taxonomy — the missing structured vocabulary for agentic adversarial testing. |
+
+**Why it belongs in this repo:** these landscapes are the connective tissue between the **methodology** ([the four-phase Red Teaming Guide](#-owasp-genai-red-teaming-guide) above) and the **operational tooling** ([TOOLS.md](TOOLS.md): garak, PyRIT, promptfoo, mcp-scan) — a way to check that your chosen tools actually cover every lifecycle stage rather than clustering on the easy (model-prompt) layer. The agentic red teaming taxonomy also maps directly onto the runtime/agentic failures cataloged in [INCIDENTS_AND_GUIDANCE_2026.md](INCIDENTS_AND_GUIDANCE_2026.md) (EchoLeak, CometJacking, ServiceNow Now Assist) and complements the [MITRE ATLAS](#-mitre-atlas-adversarial-threat-landscape-for-artificial-intelligence-systems) agent-technique vocabulary.
+
+> **Verification / confirm-live:** The existence of the three Q2 2026 landscapes and the launch of a first dedicated Red Teaming Landscape are corroborated by OWASP's own resource pages (linked above), the OWASP GenAI project's pre-RSA-2026 announcement (March 2026), and independent third-party analysis. The Solutions Landscapes are **living documents** — vendor/tool inclusion, the exact taxonomy, and version labels change each release, and OWASP-published landscapes do **not** imply endorsement of any listed vendor. Confirm the current edition and scope on the primary resource pages before citing specifics in formal work.
+
+---
+
 ## 🏛️ NIST Artificial Intelligence Risk Management Framework (NIST AI RMF 1.0)
 
 Released by the U.S. National Institute of Standards and Technology, the [NIST AI RMF](https://www.nist.gov/itl/ai-risk-management-framework) is a voluntary organizational framework designed to help enterprises design, deploy, and govern trustworthy and secure AI systems.
