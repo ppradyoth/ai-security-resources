@@ -16,11 +16,12 @@ If you only read one file in this repo, the README is the map. This is the part 
     - [The first malicious MCP server in the wild — postmark-mcp](#the-first-malicious-mcp-server-found-in-the-wild--postmark-mcp)
   - [CometJacking — prompt injection in an agentic AI browser](#3-cometjacking--indirect-prompt-injection-in-an-agentic-ai-browser)
   - [ServiceNow Now Assist — second-order prompt injection](#4-servicenow-now-assist--second-order-prompt-injection-via-agent-to-agent-discovery)
+  - [Semantic Kernel — prompt injection becomes RCE inside the framework](#5-semantic-kernel--prompt-injection-becomes-rce-inside-the-agent-framework-itself-cve-2026-26030-cve-2026-25592)
 - [Authoritative Guidance](#-authoritative-guidance-the-rules-caught-up)
-  - [NSA — MCP Security Design Considerations](#5-nsa-aisc--mcp-security-design-considerations-may-2026)
-  - [OWASP Top 10 for LLM Apps 2025](#6-owasp-top-10-for-llm-applications-2025)
-  - [OWASP Top 10 for Agentic Applications 2026](#7-owasp-top-10-for-agentic-applications-2026)
-  - [MITRE ATLAS — the agentic expansion](#8-mitre-atlas--the-agentic-expansion-zenity-labs-collaboration)
+  - [NSA — MCP Security Design Considerations](#6-nsa-aisc--mcp-security-design-considerations-may-2026)
+  - [OWASP Top 10 for LLM Apps 2025](#7-owasp-top-10-for-llm-applications-2025)
+  - [OWASP Top 10 for Agentic Applications 2026](#8-owasp-top-10-for-agentic-applications-2026)
+  - [MITRE ATLAS — the agentic expansion](#9-mitre-atlas--the-agentic-expansion-zenity-labs-collaboration)
 - [What this means for defenders](#-what-this-means-for-defenders-opinionated)
 - [Contributing an incident](#-contributing-an-incident)
 
@@ -128,9 +129,34 @@ The first widely-reported demonstration that **agent-to-agent** features turn on
 
 ---
 
+### 5. Semantic Kernel — prompt injection becomes RCE *inside the agent framework itself* (CVE-2026-26030, CVE-2026-25592)
+
+Every incident above ends in **data exfiltration** or a compromised **MCP client/server**. This pair is different, and worse in a specific way: the sink is the **agent framework's own plumbing**, and the impact is **code execution on the host**. A poisoned document doesn't just leak — it runs.
+
+| Field | Detail |
+|:---|:---|
+| **Disclosed** | May 7, 2026 — MSRC advisories + Microsoft Security Blog, *"When prompts become shells: RCE vulnerabilities in AI agent frameworks"* |
+| **Discovered by** | Microsoft Security research (Python SDK CVE credited to amiteliahu, doredry, urioren per the GitHub advisory) |
+| **Target** | Microsoft **Semantic Kernel** — the Python **and** .NET agent SDKs |
+| **Class** | Indirect prompt injection → arbitrary code / file write → host RCE |
+| **Exploited in wild?** | No public evidence; disclosed with coordinated patches |
+
+| CVE | SDK | CVSS | Mechanism | Fixed in |
+|:---|:---|:---|:---|:---|
+| [CVE-2026-26030](https://github.com/advisories/GHSA-xjw9-4gw8-4rqx) | Python | 9.9 (`CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:H/A:H`) | `InMemoryVectorStore` builds filter expressions as Python **lambdas** and runs them through **`eval()`**; an attacker-controllable field (e.g. a poisoned RAG record) breaks out of the string and executes arbitrary Python in the agent process the moment a search triggers filtering | `semantic-kernel` **1.39.4** |
+| [CVE-2026-25592](https://github.com/microsoft/semantic-kernel/security/advisories/GHSA-2ww3-72rp-wpp4) | .NET | 9.9 (`CVSS:3.1/AV:N/AC:L/PR:L/UI:N/S:C/C:H/I:H/A:H`) | `SessionsPythonPlugin`'s `DownloadFileAsync` / `UploadFileAsync` are exposed as `[KernelFunction]` (callable by the agent) with **no path validation** → path traversal → **arbitrary file write** to the host (e.g. a Startup folder), which is a straight path to RCE | `Microsoft.SemanticKernel.Plugins.Core` **1.71.0** (NuGet); `semantic-kernel` **1.39.3** (pip) |
+
+**Why it matters:** the whole premise of this file is *"the dangerous data is what your agent retrieves."* These CVEs are what happens when that data lands in a framework that will **`eval()` it** or hand it to a **file-write tool with no allowlist**. The RAG variant is especially nasty: no user prompt is malicious — a single record injected into the vector store is enough, and it fires during ordinary retrieval. The .NET variant shows the other classic footgun: wiring a broad, powerful capability (`DownloadFileAsync`) as an agent-callable tool without constraining its arguments. Microsoft's fix for the Python bug is instructive — not "escape the input" but a **four-layer AST guard** (node-type allowlist, function-call allowlist, dangerous-attribute blocklist, name-node restriction), because partial blocklists on an `eval()` sink get bypassed via Python's class hierarchy.
+
+**The lesson:** audit your framework's **tool wiring and any dynamic-expression evaluation** as attacker-reachable sinks. Never `eval()`/`exec()` a string that can contain retrieved content. For every `[KernelFunction]` / registered tool, constrain arguments with an **invocation filter / allowlist** — the mitigation Microsoft recommends for `DownloadFileAsync` is exactly a Function Invocation Filter that allowlists the target path. Pin `semantic-kernel ≥ 1.39.4` (Python) and `Microsoft.SemanticKernel.Plugins.Core ≥ 1.71.0` (.NET).
+
+**Read:** [Microsoft Security Blog — *When prompts become shells*](https://www.microsoft.com/en-us/security/blog/2026/05/07/prompts-become-shells-rce-vulnerabilities-ai-agent-frameworks/) · [GitHub Advisory GHSA-xjw9-4gw8-4rqx (CVE-2026-26030)](https://github.com/advisories/GHSA-xjw9-4gw8-4rqx) · [GitHub Advisory GHSA-2ww3-72rp-wpp4 (CVE-2026-25592)](https://github.com/microsoft/semantic-kernel/security/advisories/GHSA-2ww3-72rp-wpp4)
+
+---
+
 ## 📜 Authoritative Guidance (the rules caught up)
 
-### 5. NSA AISC — MCP Security Design Considerations (May 2026)
+### 6. NSA AISC — MCP Security Design Considerations (May 2026)
 
 On **May 20, 2026**, the NSA's Artificial Intelligence Security Center released a Cybersecurity Information Sheet, *"Model Context Protocol (MCP): Security Design Considerations for AI-Driven Automation."*
 
@@ -153,7 +179,7 @@ On **May 20, 2026**, the NSA's Artificial Intelligence Security Center released 
 
 ---
 
-### 6. OWASP Top 10 for LLM Applications 2025
+### 7. OWASP Top 10 for LLM Applications 2025
 
 The [OWASP GenAI Security Project](https://genai.owasp.org/llm-top-10/) refreshed the LLM Top 10 for 2025. Notable changes versus the prior list:
 
@@ -166,7 +192,7 @@ Red-team mapping: frameworks like [DeepTeam](https://www.trydeepteam.com/docs/fr
 
 ---
 
-### 7. OWASP Top 10 for Agentic Applications 2026
+### 8. OWASP Top 10 for Agentic Applications 2026
 
 Released **December 9, 2025** with input from 100+ security researchers and practitioners, this is the first OWASP Top 10 dedicated to **autonomous and multi-agent** systems ([announcement](https://genai.owasp.org/2025/12/09/owasp-genai-security-project-releases-top-10-risks-and-mitigations-for-agentic-ai-security/) · [resource page](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/)). It targets risks that only exist once a model can plan, delegate, and act:
 
@@ -179,7 +205,7 @@ If you build agents, this list — not the LLM Top 10 — is now your baseline. 
 
 ---
 
-### 8. MITRE ATLAS — the agentic expansion (Zenity Labs collaboration)
+### 9. MITRE ATLAS — the agentic expansion (Zenity Labs collaboration)
 
 OWASP gives you a *checklist*; [MITRE ATLAS](https://atlas.mitre.org/) gives you a *matrix* — the ATT&CK-style tactic→technique structure threat-modelers actually pivot through. Through 2025, ATLAS's gap was the same one this whole file documents: it modeled attacks on *models*, not on *agents*. That gap closed in late 2025.
 
@@ -213,7 +239,8 @@ OWASP gives you a *checklist*; [MITRE ATLAS](https://atlas.mitre.org/) gives you
 3. **Least privilege per tool, not per agent.** The NSA guidance is blunt about this for a reason: one broad token is one breach away from everything.
 4. **Log tool calls like you log auth.** You cannot investigate what you didn't record. Tool name + caller + arguments + result, every time.
 5. **Insecure reference code is a supply-chain vector.** A vulnerable sample server forked thousands of times is a fleet of vulnerable production servers. Audit what you copy.
-6. **Use the agentic frameworks, not the model-era ones.** Map your red-team findings to the *agentic* taxonomies now that they exist — OWASP Top 10 for Agentic Applications and the MITRE ATLAS agent techniques (§7–8). "Prompt injection" is no longer a precise enough finding for a multi-agent system; "AI Agent Context Poisoning persisting via Memory Manipulation" is.
+6. **Use the agentic frameworks, not the model-era ones.** Map your red-team findings to the *agentic* taxonomies now that they exist — OWASP Top 10 for Agentic Applications and the MITRE ATLAS agent techniques (§8–9). "Prompt injection" is no longer a precise enough finding for a multi-agent system; "AI Agent Context Poisoning persisting via Memory Manipulation" is.
+7. **Audit your framework's own sinks, not just the model.** The Semantic Kernel CVEs (§5) landed inside the SDK: an `eval()` on a retrieved filter string, and a file-write tool exposed to the agent with no path allowlist. Never `eval`/`exec` a string that can carry retrieved content, and constrain every registered tool's arguments with an invocation filter. The framework is attack surface too.
 
 ---
 
