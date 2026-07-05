@@ -17,11 +17,12 @@ If you only read one file in this repo, the README is the map. This is the part 
   - [CometJacking — prompt injection in an agentic AI browser](#3-cometjacking--indirect-prompt-injection-in-an-agentic-ai-browser)
   - [ServiceNow Now Assist — second-order prompt injection](#4-servicenow-now-assist--second-order-prompt-injection-via-agent-to-agent-discovery)
   - [Semantic Kernel — prompt injection becomes RCE inside the framework](#5-semantic-kernel--prompt-injection-becomes-rce-inside-the-agent-framework-itself-cve-2026-26030-cve-2026-25592)
+  - [IDEsaster — a universal attack chain against every AI coding IDE tested](#6-idesaster--a-universal-attack-chain-against-every-ai-coding-ide-tested)
 - [Authoritative Guidance](#-authoritative-guidance-the-rules-caught-up)
-  - [NSA — MCP Security Design Considerations](#6-nsa-aisc--mcp-security-design-considerations-may-2026)
-  - [OWASP Top 10 for LLM Apps 2025](#7-owasp-top-10-for-llm-applications-2025)
-  - [OWASP Top 10 for Agentic Applications 2026](#8-owasp-top-10-for-agentic-applications-2026)
-  - [MITRE ATLAS — the agentic expansion](#9-mitre-atlas--the-agentic-expansion-zenity-labs-collaboration)
+  - [NSA — MCP Security Design Considerations](#7-nsa-aisc--mcp-security-design-considerations-may-2026)
+  - [OWASP Top 10 for LLM Apps 2025](#8-owasp-top-10-for-llm-applications-2025)
+  - [OWASP Top 10 for Agentic Applications 2026](#9-owasp-top-10-for-agentic-applications-2026)
+  - [MITRE ATLAS — the agentic expansion](#10-mitre-atlas--the-agentic-expansion-zenity-labs-collaboration)
 - [What this means for defenders](#-what-this-means-for-defenders-opinionated)
 - [Contributing an incident](#-contributing-an-incident)
 
@@ -154,9 +155,37 @@ Every incident above ends in **data exfiltration** or a compromised **MCP client
 
 ---
 
+### 6. IDEsaster — a universal attack chain against every AI coding IDE tested
+
+The Semantic Kernel pair (§5) showed the *framework* as sink. IDEsaster shows the **IDE itself** as the sink — and unlike the single-product incidents above, it landed as a **class** that broke *every* AI-assisted editor the researcher pointed it at.
+
+| Field | Detail |
+|:---|:---|
+| **Discovered by** | Ari Marzouk ([MaccariTA](https://maccarita.com/posts/idesaster/)), research conducted over ~6 months |
+| **Disclosed** | December 2025 |
+| **Scope** | **30+ vulnerabilities** across **10+ market-leading products**; **24 assigned CVEs** |
+| **Affected** | Cursor · Windsurf · Kiro.dev · GitHub Copilot · Zed.dev · Roo Code · JetBrains Junie · Cline (among others) |
+| **Class** | Indirect prompt injection → abuse of *legitimate* IDE features → data exfiltration / remote code execution |
+| **Exploited in wild?** | No public evidence; demonstrated by the researcher |
+
+**Why it matters:** IDEsaster's finding is that **100% of the AI IDEs tested were vulnerable** to the same shape of attack — not because of one shared bug, but because they all share one **blind spot**. The attack chain begins with context hijacking via prompt injection — hidden instructions planted in **rule files, READMEs, file names, or the output of a malicious MCP server** — and then, instead of attacking the AI layer, it turns the *base IDE's own legitimate features* into the exploit primitive. As Marzouk put it, "*All AI IDEs effectively ignore the base software (IDE) in their threat model*," and the fact that "*multiple universal attack chains affected each and every AI IDE tested*" was the most surprising result.
+
+Two representative chains, as reported ([The Hacker News](https://thehackernews.com/2025/12/researchers-uncover-30-flaws-in-ai.html)):
+
+- **Workspace-config → code execution:** a prompt injection edits a multi-root workspace config file (`*.code-workspace`) to override settings that lead to command execution — e.g. **[CVE-2025-64660](https://nvd.nist.gov/vuln/detail/CVE-2025-64660)** (GitHub Copilot), **[CVE-2025-61590](https://nvd.nist.gov/vuln/detail/CVE-2025-61590)** (Cursor), **[CVE-2025-58372](https://nvd.nist.gov/vuln/detail/CVE-2025-58372)** (Roo Code).
+- **Remote-JSON-schema → silent exfiltration:** a prompt injection reads a sensitive file and writes a JSON file that references a **JSON schema hosted on an attacker-controlled domain**; when the IDE fetches the schema over HTTP, the data rides out in the request — e.g. **[CVE-2025-49150](https://nvd.nist.gov/vuln/detail/CVE-2025-49150)** (Cursor), **[CVE-2025-53097](https://nvd.nist.gov/vuln/detail/CVE-2025-53097)** (Roo Code), **[CVE-2025-58335](https://nvd.nist.gov/vuln/detail/CVE-2025-58335)** (JetBrains Junie).
+
+**The lesson:** the injection channel for a coding agent is *your repository* — a poisoned README, a crafted filename, an `AGENTS.md`/rules file, or an MCP server's tool output is all it takes to seize the agent's context. And the dangerous sink isn't only the model or the framework; it's the **editor's ordinary features** (workspace settings, config-file handling, schema fetching) that the agent can drive. Treat any repo you open in an AI IDE as untrusted input, keep agent auto-run/auto-apply gated behind human approval for config and workspace files, and egress-filter the IDE itself — the base tool belongs *in* the threat model, not under it.
+
+**Read:** [MaccariTA — IDEsaster (primary)](https://maccarita.com/posts/idesaster/) · [The Hacker News](https://thehackernews.com/2025/12/researchers-uncover-30-flaws-in-ai.html) · [Tom's Hardware](https://www.tomshardware.com/tech-industry/cyber-security/researchers-uncover-critical-ai-ide-flaws-exposing-developers-to-data-theft-and-rce) · [Cloud Security Alliance — AI coding-assistant attack surface](https://labs.cloudsecurityalliance.org/research/csa-research-note-ai-coding-assistant-attack-surface-2026040/)
+
+> **Verification note:** the primary write-up (maccarita.com), NVD, and several secondary outlets are bot-protected and were not machine-fetchable at write time. The scope (30+ flaws / 24 CVEs / 10+ products), the researcher, the affected-product list, the two attack chains, and the specific CVE→product mappings are corroborated across **The Hacker News, Tom's Hardware, TechWorm, BeyondMachines, and Cloud Security Alliance Labs** reporting the same disclosure. CVSS scores are not asserted here because the NVD detail pages could not be independently retrieved; the CVE IDs link to their NVD pages for the reader to confirm live.
+
+---
+
 ## 📜 Authoritative Guidance (the rules caught up)
 
-### 6. NSA AISC — MCP Security Design Considerations (May 2026)
+### 7. NSA AISC — MCP Security Design Considerations (May 2026)
 
 On **May 20, 2026**, the NSA's Artificial Intelligence Security Center released a Cybersecurity Information Sheet, *"Model Context Protocol (MCP): Security Design Considerations for AI-Driven Automation."*
 
@@ -179,7 +208,7 @@ On **May 20, 2026**, the NSA's Artificial Intelligence Security Center released 
 
 ---
 
-### 7. OWASP Top 10 for LLM Applications 2025
+### 8. OWASP Top 10 for LLM Applications 2025
 
 The [OWASP GenAI Security Project](https://genai.owasp.org/llm-top-10/) refreshed the LLM Top 10 for 2025. Notable changes versus the prior list:
 
@@ -192,7 +221,7 @@ Red-team mapping: frameworks like [DeepTeam](https://www.trydeepteam.com/docs/fr
 
 ---
 
-### 8. OWASP Top 10 for Agentic Applications 2026
+### 9. OWASP Top 10 for Agentic Applications 2026
 
 Released **December 9, 2025** with input from 100+ security researchers and practitioners, this is the first OWASP Top 10 dedicated to **autonomous and multi-agent** systems ([announcement](https://genai.owasp.org/2025/12/09/owasp-genai-security-project-releases-top-10-risks-and-mitigations-for-agentic-ai-security/) · [resource page](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/)). It targets risks that only exist once a model can plan, delegate, and act:
 
@@ -205,7 +234,7 @@ If you build agents, this list — not the LLM Top 10 — is now your baseline. 
 
 ---
 
-### 9. MITRE ATLAS — the agentic expansion (Zenity Labs collaboration)
+### 10. MITRE ATLAS — the agentic expansion (Zenity Labs collaboration)
 
 OWASP gives you a *checklist*; [MITRE ATLAS](https://atlas.mitre.org/) gives you a *matrix* — the ATT&CK-style tactic→technique structure threat-modelers actually pivot through. Through 2025, ATLAS's gap was the same one this whole file documents: it modeled attacks on *models*, not on *agents*. That gap closed in late 2025.
 
@@ -239,7 +268,7 @@ OWASP gives you a *checklist*; [MITRE ATLAS](https://atlas.mitre.org/) gives you
 3. **Least privilege per tool, not per agent.** The NSA guidance is blunt about this for a reason: one broad token is one breach away from everything.
 4. **Log tool calls like you log auth.** You cannot investigate what you didn't record. Tool name + caller + arguments + result, every time.
 5. **Insecure reference code is a supply-chain vector.** A vulnerable sample server forked thousands of times is a fleet of vulnerable production servers. Audit what you copy.
-6. **Use the agentic frameworks, not the model-era ones.** Map your red-team findings to the *agentic* taxonomies now that they exist — OWASP Top 10 for Agentic Applications and the MITRE ATLAS agent techniques (§8–9). "Prompt injection" is no longer a precise enough finding for a multi-agent system; "AI Agent Context Poisoning persisting via Memory Manipulation" is.
+6. **Use the agentic frameworks, not the model-era ones.** Map your red-team findings to the *agentic* taxonomies now that they exist — OWASP Top 10 for Agentic Applications and the MITRE ATLAS agent techniques (§9–10). "Prompt injection" is no longer a precise enough finding for a multi-agent system; "AI Agent Context Poisoning persisting via Memory Manipulation" is.
 7. **Audit your framework's own sinks, not just the model.** The Semantic Kernel CVEs (§5) landed inside the SDK: an `eval()` on a retrieved filter string, and a file-write tool exposed to the agent with no path allowlist. Never `eval`/`exec` a string that can carry retrieved content, and constrain every registered tool's arguments with an invocation filter. The framework is attack surface too.
 
 ---
