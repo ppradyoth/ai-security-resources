@@ -18,11 +18,12 @@ If you only read one file in this repo, the README is the map. This is the part 
   - [ServiceNow Now Assist — second-order prompt injection](#4-servicenow-now-assist--second-order-prompt-injection-via-agent-to-agent-discovery)
   - [Semantic Kernel — prompt injection becomes RCE inside the framework](#5-semantic-kernel--prompt-injection-becomes-rce-inside-the-agent-framework-itself-cve-2026-26030-cve-2026-25592)
   - [IDEsaster — a universal attack chain against every AI coding IDE tested](#6-idesaster--a-universal-attack-chain-against-every-ai-coding-ide-tested)
+  - [LiteLLM — the AI gateway itself becomes the breach (CVE-2026-42271, CISA KEV)](#7-litellm--the-ai-gateway-itself-becomes-the-breach-cve-2026-42271-cve-2026-12773)
 - [Authoritative Guidance](#-authoritative-guidance-the-rules-caught-up)
-  - [NSA — MCP Security Design Considerations](#7-nsa-aisc--mcp-security-design-considerations-may-2026)
-  - [OWASP Top 10 for LLM Apps 2025](#8-owasp-top-10-for-llm-applications-2025)
-  - [OWASP Top 10 for Agentic Applications 2026](#9-owasp-top-10-for-agentic-applications-2026)
-  - [MITRE ATLAS — the agentic expansion](#10-mitre-atlas--the-agentic-expansion-zenity-labs-collaboration)
+  - [NSA — MCP Security Design Considerations](#8-nsa-aisc--mcp-security-design-considerations-may-2026)
+  - [OWASP Top 10 for LLM Apps 2025](#9-owasp-top-10-for-llm-applications-2025)
+  - [OWASP Top 10 for Agentic Applications 2026](#10-owasp-top-10-for-agentic-applications-2026)
+  - [MITRE ATLAS — the agentic expansion](#11-mitre-atlas--the-agentic-expansion-zenity-labs-collaboration)
 - [What this means for defenders](#-what-this-means-for-defenders-opinionated)
 - [Contributing an incident](#-contributing-an-incident)
 
@@ -183,9 +184,35 @@ Two representative chains, as reported ([The Hacker News](https://thehackernews.
 
 ---
 
+### 7. LiteLLM — the AI gateway itself becomes the breach (CVE-2026-42271, CVE-2026-12773)
+
+Every incident above attacks a *model*, an *agent*, a *framework*, or an *IDE*. This one attacks the **plumbing** — the LLM gateway/proxy that sits in front of them all. [LiteLLM](https://github.com/BerriAI/litellm) is one of the most widely deployed open-source AI gateways: a single control plane that brokers requests to 100+ model providers, holding the **provider API keys, per-team budgets, and request/response logs** for an entire org. Compromise the gateway and you don't breach one agent — you breach the whole fleet's credentials and traffic.
+
+| Field | Detail |
+|:---|:---|
+| **Component** | LiteLLM Proxy (AI gateway / LLM router), BerriAI |
+| **Flagship CVE** | **[CVE-2026-42271](https://nvd.nist.gov/vuln/detail/CVE-2026-42271)** — command injection → remote code execution, **CVSS 8.7** |
+| **Discovered by** | [Horizon3.ai](https://horizon3.ai/attack-research/vulnerabilities/cve-2026-42271-chained-with-cve-2026-48710/) |
+| **Exploited in wild?** | **Yes** — added to the **[CISA Known Exploited Vulnerabilities catalog](https://www.cisa.gov/known-exploited-vulnerabilities-catalog)** on **June 8, 2026** |
+| **Affected / fixed** | 42271: `v1.74.2`–`v1.83.6`, fixed in **`v1.83.7`** · 12773: up to `v1.59.8` |
+
+**The RCE (CVE-2026-42271).** Two MCP test endpoints — `POST /mcp-rest/test/connection` and `POST /mcp-rest/test/tools/list` — accept a full MCP server configuration, including the `command`, `args`, and `env` fields for stdio transports. When invoked, LiteLLM **spawns the supplied command as a subprocess under the proxy's own process user** — with *no command allowlist and no admin-role gate*. Any holder of an ordinary proxy API key could run arbitrary commands on the gateway host. The `v1.83.7` fix restricts both endpoints to the `PROXY_ADMIN` role.
+
+**The chain to CVSS 10 (unauthenticated).** On its own, 42271 requires a valid API key — that authentication requirement is the only thing keeping it out of "critical." Horizon3.ai chained it with **[CVE-2026-48710](https://nvd.nist.gov/vuln/detail/CVE-2026-48710)** — a Host-header authentication bypass ("BadHost") in the **Starlette** web framework LiteLLM is built on — to reach **unauthenticated RCE from any network-reachable host**, a combined **CVSS 10.0**. The gateway's own dependency became the front door.
+
+**Not an isolated bug — a cluster.** June 2026 also brought **[CVE-2026-12773](https://nvd.nist.gov/vuln/detail/CVE-2026-12773)** (CVSS 7.3): improper validation in the proxy's `UserAPIKeyAuth` (`litellm/proxy/auth/user_api_key_auth.py`) let an attacker **bypass authentication** to reach proxied model services — consuming API credits, reading model inputs/outputs, and exfiltrating the downstream provider keys the gateway stores. Alongside it, BerriAI's advisory stream disclosed password-hash exposure / pass-the-hash and privilege-escalation issues in the same window. A control plane this centralized is a high-value target, and it was treated like one.
+
+**The lesson:** an **LLM gateway is critical infrastructure, not a dev convenience.** It concentrates every provider secret and every prompt/response your org sends — so it earns the same controls you'd put on any internet-facing auth broker: patch on the vendor's cadence (LiteLLM's fix landed fast — *deploying* it is on you), never expose the admin/test surface to the open internet, put it behind network policy and a reverse proxy that validates the `Host` header, run it as an unprivileged user in a locked-down container, and rotate the provider keys it holds on any suspicion. Treat "internal AI plumbing" as the breach path it now demonstrably is.
+
+**Read:** [Horizon3.ai — CVE-2026-42271 chained with CVE-2026-48710 (discoverer)](https://horizon3.ai/attack-research/vulnerabilities/cve-2026-42271-chained-with-cve-2026-48710/) · [The Hacker News — exploited in the wild](https://thehackernews.com/2026/06/litellm-flaw-cve-2026-42271-exploited.html) · [Cloud Security Alliance Labs — active exploitation via MCP injection](https://labs.cloudsecurityalliance.org/research/csa-research-note-litellm-cve-2026-42271-ai-gateway-exploita/) · [BerriAI/litellm GitHub Security Advisories](https://github.com/BerriAI/litellm/security/advisories)
+
+> **Verification note:** CVE IDs link to their NVD detail pages. The RCE mechanism (the two `/mcp-rest/test/*` endpoints spawning a user-supplied subprocess), the `8.7` standalone / `10.0` chained CVSS scores, the `v1.74.2`–`v1.83.6` affected range fixed in `v1.83.7`, and the `CVE-2026-48710` Starlette "BadHost" chain are drawn from the **Horizon3.ai** discoverer write-up and corroborated by **The Hacker News** and **Cloud Security Alliance Labs**. In-the-wild exploitation and the **June 8, 2026** date are per the **CISA KEV** catalog. The `CVE-2026-12773` details (CVSS 7.3, `UserAPIKeyAuth`, ≤`v1.59.8`) are corroborated across the CVE record and independent advisories; the associated pass-the-hash / privilege-escalation issues are referenced from BerriAI's own GitHub Security Advisories rather than asserted with specific scores here.
+
+---
+
 ## 📜 Authoritative Guidance (the rules caught up)
 
-### 7. NSA AISC — MCP Security Design Considerations (May 2026)
+### 8. NSA AISC — MCP Security Design Considerations (May 2026)
 
 On **May 20, 2026**, the NSA's Artificial Intelligence Security Center released a Cybersecurity Information Sheet, *"Model Context Protocol (MCP): Security Design Considerations for AI-Driven Automation."*
 
@@ -208,7 +235,7 @@ On **May 20, 2026**, the NSA's Artificial Intelligence Security Center released 
 
 ---
 
-### 8. OWASP Top 10 for LLM Applications 2025
+### 9. OWASP Top 10 for LLM Applications 2025
 
 The [OWASP GenAI Security Project](https://genai.owasp.org/llm-top-10/) refreshed the LLM Top 10 for 2025. Notable changes versus the prior list:
 
@@ -221,7 +248,7 @@ Red-team mapping: frameworks like [DeepTeam](https://www.trydeepteam.com/docs/fr
 
 ---
 
-### 9. OWASP Top 10 for Agentic Applications 2026
+### 10. OWASP Top 10 for Agentic Applications 2026
 
 Released **December 9, 2025** with input from 100+ security researchers and practitioners, this is the first OWASP Top 10 dedicated to **autonomous and multi-agent** systems ([announcement](https://genai.owasp.org/2025/12/09/owasp-genai-security-project-releases-top-10-risks-and-mitigations-for-agentic-ai-security/) · [resource page](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/)). It targets risks that only exist once a model can plan, delegate, and act:
 
@@ -234,7 +261,7 @@ If you build agents, this list — not the LLM Top 10 — is now your baseline. 
 
 ---
 
-### 10. MITRE ATLAS — the agentic expansion (Zenity Labs collaboration)
+### 11. MITRE ATLAS — the agentic expansion (Zenity Labs collaboration)
 
 OWASP gives you a *checklist*; [MITRE ATLAS](https://atlas.mitre.org/) gives you a *matrix* — the ATT&CK-style tactic→technique structure threat-modelers actually pivot through. Through 2025, ATLAS's gap was the same one this whole file documents: it modeled attacks on *models*, not on *agents*. That gap closed in late 2025.
 
@@ -268,7 +295,7 @@ OWASP gives you a *checklist*; [MITRE ATLAS](https://atlas.mitre.org/) gives you
 3. **Least privilege per tool, not per agent.** The NSA guidance is blunt about this for a reason: one broad token is one breach away from everything.
 4. **Log tool calls like you log auth.** You cannot investigate what you didn't record. Tool name + caller + arguments + result, every time.
 5. **Insecure reference code is a supply-chain vector.** A vulnerable sample server forked thousands of times is a fleet of vulnerable production servers. Audit what you copy.
-6. **Use the agentic frameworks, not the model-era ones.** Map your red-team findings to the *agentic* taxonomies now that they exist — OWASP Top 10 for Agentic Applications and the MITRE ATLAS agent techniques (§9–10). "Prompt injection" is no longer a precise enough finding for a multi-agent system; "AI Agent Context Poisoning persisting via Memory Manipulation" is.
+6. **Use the agentic frameworks, not the model-era ones.** Map your red-team findings to the *agentic* taxonomies now that they exist — OWASP Top 10 for Agentic Applications and the MITRE ATLAS agent techniques (§10–11). "Prompt injection" is no longer a precise enough finding for a multi-agent system; "AI Agent Context Poisoning persisting via Memory Manipulation" is.
 7. **Audit your framework's own sinks, not just the model.** The Semantic Kernel CVEs (§5) landed inside the SDK: an `eval()` on a retrieved filter string, and a file-write tool exposed to the agent with no path allowlist. Never `eval`/`exec` a string that can carry retrieved content, and constrain every registered tool's arguments with an invocation filter. The framework is attack surface too.
 
 ---
