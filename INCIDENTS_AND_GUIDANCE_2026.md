@@ -19,11 +19,12 @@ If you only read one file in this repo, the README is the map. This is the part 
   - [Semantic Kernel — prompt injection becomes RCE inside the framework](#5-semantic-kernel--prompt-injection-becomes-rce-inside-the-agent-framework-itself-cve-2026-26030-cve-2026-25592)
   - [IDEsaster — a universal attack chain against every AI coding IDE tested](#6-idesaster--a-universal-attack-chain-against-every-ai-coding-ide-tested)
   - [LiteLLM — the AI gateway itself becomes the breach (CVE-2026-42271, CISA KEV)](#7-litellm--the-ai-gateway-itself-becomes-the-breach-cve-2026-42271-cve-2026-12773)
+  - [PickleScan — the model scanner is itself bypassable (CVE-2025-10155/56/57)](#8-picklescan--the-scanner-you-trust-to-catch-malicious-models-is-itself-bypassable-cve-2025-10155---10156---10157)
 - [Authoritative Guidance](#-authoritative-guidance-the-rules-caught-up)
-  - [NSA — MCP Security Design Considerations](#8-nsa-aisc--mcp-security-design-considerations-may-2026)
-  - [OWASP Top 10 for LLM Apps 2025](#9-owasp-top-10-for-llm-applications-2025)
-  - [OWASP Top 10 for Agentic Applications 2026](#10-owasp-top-10-for-agentic-applications-2026)
-  - [MITRE ATLAS — the agentic expansion](#11-mitre-atlas--the-agentic-expansion-zenity-labs-collaboration)
+  - [NSA — MCP Security Design Considerations](#9-nsa-aisc--mcp-security-design-considerations-may-2026)
+  - [OWASP Top 10 for LLM Apps 2025](#10-owasp-top-10-for-llm-applications-2025)
+  - [OWASP Top 10 for Agentic Applications 2026](#11-owasp-top-10-for-agentic-applications-2026)
+  - [MITRE ATLAS — the agentic expansion](#12-mitre-atlas--the-agentic-expansion-zenity-labs-collaboration)
 - [What this means for defenders](#-what-this-means-for-defenders-opinionated)
 - [Contributing an incident](#-contributing-an-incident)
 
@@ -210,9 +211,35 @@ Every incident above attacks a *model*, an *agent*, a *framework*, or an *IDE*. 
 
 ---
 
+### 8. PickleScan — the scanner you trust to catch malicious models is itself bypassable (CVE-2025-10155 / -10156 / -10157)
+
+Every other incident here attacks a model, an agent, a framework, a gateway. This one attacks the **defense**. The standard advice for the pickle-RCE problem is "scan the model file before you load it" — and [PickleScan](https://github.com/mmaitre314/picklescan) is the open-source scanner that most of the ecosystem leans on for exactly that (it's wired into Hugging Face Hub's malware checks). In December 2025, three bypasses landed showing a malicious PyTorch model can be rated **clean by the scanner and still execute code on load**. When the detector and the loader disagree about how to parse a file, the attacker lives in the gap.
+
+| Field | Detail |
+|:---|:---|
+| **Component** | PickleScan (open-source malicious-pickle scanner; used in Hugging Face Hub scanning) |
+| **CVEs** | **[CVE-2025-10155](https://nvd.nist.gov/vuln/detail/CVE-2025-10155)** · **[CVE-2025-10156](https://nvd.nist.gov/vuln/detail/CVE-2025-10156)** · **[CVE-2025-10157](https://nvd.nist.gov/vuln/detail/CVE-2025-10157)** |
+| **CVSS** | **9.3 (Critical)** — all three |
+| **Class** | Scanner evasion → arbitrary code execution via malicious model file |
+| **Disclosed / fixed** | December 2025 · fixed in **`picklescan 0.0.31`** |
+| **Exploited in wild?** | No public evidence — but the *class* (pickle model RCE) is actively abused; see [huntr](https://huntr.com/) disclosures |
+
+**Three ways the scanner and the loader disagree:**
+- **CVE-2025-10155 — extension-mismatch bypass.** `scan_bytes` prioritizes the file *extension* over content. Give a plain pickle a PyTorch extension (`.bin`, `.pt`) and the scanner tries PyTorch-specific parsing; when that parse fails, it errors out **without falling back to standard pickle analysis** — so the payload is never inspected. ([GHSA-jgw4-cr84-mqxg](https://github.com/advisories/GHSA-jgw4-cr84-mqxg))
+- **CVE-2025-10156 — ZIP CRC bypass.** PickleScan reads archives via Python's `zipfile`, which *throws* on a CRC mismatch; **PyTorch ignores the same mismatch and loads anyway.** A deliberately corrupt archive is unscannable-but-loadable.
+- **CVE-2025-10157 — blacklist evasion via subclassing.** Instead of importing a blacklisted dangerous global directly, reference a **subclass** of it. The scanner's blacklist doesn't match, so the payload is rated merely "Suspicious" rather than blocked.
+
+**Why it matters:** this is the model-supply-chain equivalent of an antivirus evasion, and it's a **structural** bug class, not a one-off. A scanner is just another parser; any place its parsing diverges from the real loader's is a bypass. That's also why it keeps producing findings — the academic **["Art of Hide and Seek" / PickleCloak](https://arxiv.org/html/2508.19774v1)** framework systematically enumerates this surface (the paper reports on the order of ~22 exploitable model-loading paths and ~9 scanner-side exceptions). The defensive takeaway is blunt: **scanning pickles is mitigation, not prevention.** The prevention is to not execute code on load at all — prefer **[safetensors](https://github.com/huggingface/safetensors)**, load with `weights_only=True` where the framework supports it, and treat any scanner (PickleScan, ModelScan) as defense-in-depth with known gaps, kept patched (`≥ 0.0.31`), never as a green-light oracle.
+
+**Read:** [The Hacker News — Picklescan bugs let malicious PyTorch models evade scans](https://thehackernews.com/2025/12/picklescan-bugs-allow-malicious-pytorch.html) · [Infosecurity Magazine](https://www.infosecurity-magazine.com/news/picklescan-flaws-expose-ai-supply/) · [GitHub Advisory (CVE-2025-10155)](https://github.com/advisories/GHSA-jgw4-cr84-mqxg) · [SC Media](https://www.scworld.com/brief/ai-models-threatened-by-critical-picklescan-zero-days)
+
+> **Verification note:** The three CVE IDs, the shared **CVSS 9.3** rating, and the **`0.0.31`** fix version are corroborated across **NVD**, the **GitHub Advisory Database**, **The Hacker News**, and **Infosecurity Magazine**. The per-CVE mechanisms (extension mismatch / ZIP CRC / subclass blacklist evasion) are from the GitHub advisories and The Hacker News write-up. The PickleCloak surface counts are attributed to the arXiv paper (2508.19774) as *its* figures, not restated as independent counts. No specific discoverer is named here because the primary advisories were the confirmable source.
+
+---
+
 ## 📜 Authoritative Guidance (the rules caught up)
 
-### 8. NSA AISC — MCP Security Design Considerations (May 2026)
+### 9. NSA AISC — MCP Security Design Considerations (May 2026)
 
 On **May 20, 2026**, the NSA's Artificial Intelligence Security Center released a Cybersecurity Information Sheet, *"Model Context Protocol (MCP): Security Design Considerations for AI-Driven Automation."*
 
@@ -235,7 +262,7 @@ On **May 20, 2026**, the NSA's Artificial Intelligence Security Center released 
 
 ---
 
-### 9. OWASP Top 10 for LLM Applications 2025
+### 10. OWASP Top 10 for LLM Applications 2025
 
 The [OWASP GenAI Security Project](https://genai.owasp.org/llm-top-10/) refreshed the LLM Top 10 for 2025. Notable changes versus the prior list:
 
@@ -248,7 +275,7 @@ Red-team mapping: frameworks like [DeepTeam](https://www.trydeepteam.com/docs/fr
 
 ---
 
-### 10. OWASP Top 10 for Agentic Applications 2026
+### 11. OWASP Top 10 for Agentic Applications 2026
 
 Released **December 9, 2025** with input from 100+ security researchers and practitioners, this is the first OWASP Top 10 dedicated to **autonomous and multi-agent** systems ([announcement](https://genai.owasp.org/2025/12/09/owasp-genai-security-project-releases-top-10-risks-and-mitigations-for-agentic-ai-security/) · [resource page](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/)). It targets risks that only exist once a model can plan, delegate, and act:
 
@@ -261,7 +288,7 @@ If you build agents, this list — not the LLM Top 10 — is now your baseline. 
 
 ---
 
-### 11. MITRE ATLAS — the agentic expansion (Zenity Labs collaboration)
+### 12. MITRE ATLAS — the agentic expansion (Zenity Labs collaboration)
 
 OWASP gives you a *checklist*; [MITRE ATLAS](https://atlas.mitre.org/) gives you a *matrix* — the ATT&CK-style tactic→technique structure threat-modelers actually pivot through. Through 2025, ATLAS's gap was the same one this whole file documents: it modeled attacks on *models*, not on *agents*. That gap closed in late 2025.
 
