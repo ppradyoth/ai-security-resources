@@ -71,7 +71,11 @@ Tools here are **complementary, not interchangeable**. A red-team scanner (garak
 | Tool | Maintainer | What it does | Status |
 |:---|:---|:---|:---|
 | **[ModelScan](https://github.com/protectai/modelscan)** | Protect AI | Scans model files (Pickle, HDF5, SavedModel, etc.) for unsafe serialization and embedded code before they're deserialized into your process. | 🟢 |
+| **[PickleScan](https://github.com/mmaitre314/picklescan)** | Community (used in HF Hub scanning) | Scans pickle files for malicious opcodes/imports; the scanner most of the ecosystem leans on for pickle malware. Keep it **`≥ 0.0.31`** — earlier versions carry the bypass trio below. | 🟢 |
+| **[safetensors](https://github.com/huggingface/safetensors)** | Hugging Face | Not a scanner — the *fix*. A serialization format that stores tensors only, so **no code executes on load**. Prefer it over pickle wherever the framework allows. | 🟢 |
 
+> ⚠️ **A scanner is not a green light.** In Dec 2025, three PickleScan bypasses ([CVE-2025-10155 / -10156 / -10157](INCIDENTS_AND_GUIDANCE_2026.md#8-picklescan--the-scanner-you-trust-to-catch-malicious-models-is-itself-bypassable-cve-2025-10155---10156---10157), all CVSS 9.3) let a malicious PyTorch model pass as clean and still execute on load — because a scanner is just another parser, and any gap between how *it* parses a file and how the *loader* does is a bypass. Treat scanners as defense-in-depth with known gaps, keep them patched, and prefer **not executing code on load at all** (safetensors / `weights_only=True`).
+>
 > For hands-on pickle-RCE exploitation labs, cross-reference [LABS.md](LABS.md); for the supply-chain threat model, [STANDARDS_AND_COMPLIANCE.md](STANDARDS_AND_COMPLIANCE.md).
 
 ---
