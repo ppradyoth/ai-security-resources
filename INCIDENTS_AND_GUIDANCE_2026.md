@@ -20,11 +20,12 @@ If you only read one file in this repo, the README is the map. This is the part 
   - [IDEsaster — a universal attack chain against every AI coding IDE tested](#6-idesaster--a-universal-attack-chain-against-every-ai-coding-ide-tested)
   - [LiteLLM — the AI gateway itself becomes the breach (CVE-2026-42271, CISA KEV)](#7-litellm--the-ai-gateway-itself-becomes-the-breach-cve-2026-42271-cve-2026-12773)
   - [PickleScan — the model scanner is itself bypassable (CVE-2025-10155/56/57)](#8-picklescan--the-scanner-you-trust-to-catch-malicious-models-is-itself-bypassable-cve-2025-10155---10156---10157)
+  - [Claude Code — the AI coding CLI's project files as an RCE + API-key exfil path (CVE-2025-59536, CVE-2026-21852)](#9-claude-code--the-ai-coding-clis-own-project-files-become-an-rce--api-key-exfiltration-path-cve-2025-59536-cve-2026-21852)
 - [Authoritative Guidance](#-authoritative-guidance-the-rules-caught-up)
-  - [NSA — MCP Security Design Considerations](#9-nsa-aisc--mcp-security-design-considerations-may-2026)
-  - [OWASP Top 10 for LLM Apps 2025](#10-owasp-top-10-for-llm-applications-2025)
-  - [OWASP Top 10 for Agentic Applications 2026](#11-owasp-top-10-for-agentic-applications-2026)
-  - [MITRE ATLAS — the agentic expansion](#12-mitre-atlas--the-agentic-expansion-zenity-labs-collaboration)
+  - [NSA — MCP Security Design Considerations](#10-nsa-aisc--mcp-security-design-considerations-may-2026)
+  - [OWASP Top 10 for LLM Apps 2025](#11-owasp-top-10-for-llm-applications-2025)
+  - [OWASP Top 10 for Agentic Applications 2026](#12-owasp-top-10-for-agentic-applications-2026)
+  - [MITRE ATLAS — the agentic expansion](#13-mitre-atlas--the-agentic-expansion-zenity-labs-collaboration)
 - [What this means for defenders](#-what-this-means-for-defenders-opinionated)
 - [Contributing an incident](#-contributing-an-incident)
 
@@ -237,9 +238,38 @@ Every other incident here attacks a model, an agent, a framework, a gateway. Thi
 
 ---
 
+### 9. Claude Code — the AI coding CLI's own project files become an RCE + API-key exfiltration path (CVE-2025-59536, CVE-2026-21852)
+
+[IDEsaster (#6)](#6-idesaster--a-universal-attack-chain-against-every-ai-coding-ide-tested) showed the *class* — malicious repo config weaponizing an AI coding tool. This is the same class landing on a specific, named target with CVE IDs: **Anthropic's Claude Code CLI**. In *"Caught in the Hook,"* Check Point Research showed that a repository you clone and open can run code and steal your API key **before Claude Code's own trust dialog ever asks for consent.** The unifying flaw in both CVEs is the same: *action before trust confirmation.* The trust prompt exists precisely to gate an untrusted directory — but project-scoped configuration (Hooks, MCP server definitions, environment variables in the settings files) was evaluated on the path *ahead* of that gate.
+
+> **Maintainer's note (no vendor bias):** this repository is itself maintained by [Claude Code](https://claude.ai/code). Cataloging a Claude Code vulnerability here is deliberate — the zero-fabrication policy applies to the tool holding the pen too. Both issues were disclosed responsibly, fixed by Anthropic, and shipped before publication; the lesson generalizes to *every* agentic dev tool, not this one.
+
+| Field | Detail |
+|:---|:---|
+| **Component** | Anthropic **Claude Code** CLI — npm `@anthropic-ai/claude-code` |
+| **CVEs** | **[CVE-2025-59536](https://github.com/advisories/GHSA-4fgq-fpq9-mr3g)** (code injection → RCE) · **[CVE-2026-21852](https://github.com/advisories/GHSA-jh7p-qr78-84p7)** (info disclosure → API-key exfiltration) |
+| **CVSS** | **8.7 (High)** for -59536 · **5.3 (Medium)** for -21852 |
+| **Class** | Trust-dialog bypass — untrusted project config executed / networked **before** the user grants trust |
+| **Trigger** | Start Claude Code in an **attacker-controlled directory** (e.g. a repo you just cloned) |
+| **Fixed** | -59536 in **`1.0.111`** (Oct 2025) · -21852 in **`2.0.65`** (fix Dec 28 2025; CVE published Jan 21 2026) |
+| **Discovered by** | **Check Point Research** ("Caught in the Hook") — coordinated with Anthropic; patched pre-disclosure |
+| **Exploited in wild?** | No public evidence; both patched before the write-up |
+
+**The two moves:**
+- **CVE-2025-59536 — code execution before the trust prompt (CVSS 8.7).** The startup trust dialog is supposed to gate execution for an untrusted directory, but a crafted project could get **Hooks / MCP-server / environment configuration to run arbitrary shell commands *before* the user clicked "trust."** Opening a malicious repo = attacker code runs. Fixed in `1.0.111` by deferring that evaluation until after consent.
+- **CVE-2026-21852 — API-key exfiltration before the trust prompt (CVSS 5.3).** A malicious repo ships a settings file setting **`ANTHROPIC_BASE_URL` to an attacker endpoint**; Claude Code issued API requests — carrying the user's Anthropic key — **before** showing the trust prompt, leaking the key to the attacker's server. Fixed in `2.0.65` by ensuring **no network request fires before trust is confirmed.**
+
+**Why it matters:** the trust dialog is the *whole* security boundary for "open a stranger's repo," and both bugs are the boundary being evaluated a step too late. It's the AI-CLI twin of the [IDEsaster](#6-idesaster--a-universal-attack-chain-against-every-ai-coding-ide-tested) IDE findings and the same **clone-to-pwn** shape as the [MCP breach cluster](#2-the-mcp-breach-cluster): *the dangerous input is the project you loaded, not the prompt you typed.* Defensive takeaways: **keep AI coding tools on auto-update** (both fixes ship that way), treat cloning-and-opening an untrusted repo as running untrusted code, scope agent tokens to least privilege so a leaked key is low-blast-radius, and never let project-scoped config (hooks, MCP servers, `*_BASE_URL`, env) take effect ahead of an explicit trust decision.
+
+**Read:** [Check Point Research — Caught in the Hook](https://research.checkpoint.com/2026/rce-and-api-token-exfiltration-through-claude-code-project-files-cve-2025-59536/) · [GitHub Advisory — CVE-2025-59536](https://github.com/advisories/GHSA-4fgq-fpq9-mr3g) · [GitHub Advisory — CVE-2026-21852](https://github.com/advisories/GHSA-jh7p-qr78-84p7) · [The Hacker News](https://thehackernews.com/2026/02/claude-code-flaws-allow-remote-code.html)
+
+> **Verification note:** Both CVE IDs, the **8.7 / 5.3** CVSS ratings, the **trust-dialog-bypass** mechanism, the `ANTHROPIC_BASE_URL` exfiltration vector, and the **`1.0.111`** / **`2.0.65`** fix versions are corroborated across the **GitHub Advisory Database** (GHSA-4fgq-fpq9-mr3g, GHSA-jh7p-qr78-84p7), **NVD**, **Check Point Research**, and **The Hacker News**. Discoverer credited to Check Point Research per their own write-up. The Dec 28 2025 fix / Jan 21 2026 CVE-publication timeline for -21852 is from the disclosure reporting; treat exact dates as report-sourced.
+
+---
+
 ## 📜 Authoritative Guidance (the rules caught up)
 
-### 9. NSA AISC — MCP Security Design Considerations (May 2026)
+### 10. NSA AISC — MCP Security Design Considerations (May 2026)
 
 On **May 20, 2026**, the NSA's Artificial Intelligence Security Center released a Cybersecurity Information Sheet, *"Model Context Protocol (MCP): Security Design Considerations for AI-Driven Automation."*
 
@@ -262,7 +292,7 @@ On **May 20, 2026**, the NSA's Artificial Intelligence Security Center released 
 
 ---
 
-### 10. OWASP Top 10 for LLM Applications 2025
+### 11. OWASP Top 10 for LLM Applications 2025
 
 The [OWASP GenAI Security Project](https://genai.owasp.org/llm-top-10/) refreshed the LLM Top 10 for 2025. Notable changes versus the prior list:
 
@@ -275,7 +305,7 @@ Red-team mapping: frameworks like [DeepTeam](https://www.trydeepteam.com/docs/fr
 
 ---
 
-### 11. OWASP Top 10 for Agentic Applications 2026
+### 12. OWASP Top 10 for Agentic Applications 2026
 
 Released **December 9, 2025** with input from 100+ security researchers and practitioners, this is the first OWASP Top 10 dedicated to **autonomous and multi-agent** systems ([announcement](https://genai.owasp.org/2025/12/09/owasp-genai-security-project-releases-top-10-risks-and-mitigations-for-agentic-ai-security/) · [resource page](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/)). It targets risks that only exist once a model can plan, delegate, and act:
 
@@ -288,7 +318,7 @@ If you build agents, this list — not the LLM Top 10 — is now your baseline. 
 
 ---
 
-### 12. MITRE ATLAS — the agentic expansion (Zenity Labs collaboration)
+### 13. MITRE ATLAS — the agentic expansion (Zenity Labs collaboration)
 
 OWASP gives you a *checklist*; [MITRE ATLAS](https://atlas.mitre.org/) gives you a *matrix* — the ATT&CK-style tactic→technique structure threat-modelers actually pivot through. Through 2025, ATLAS's gap was the same one this whole file documents: it modeled attacks on *models*, not on *agents*. That gap closed in late 2025.
 
