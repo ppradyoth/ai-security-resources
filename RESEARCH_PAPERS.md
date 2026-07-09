@@ -10,6 +10,7 @@ This document serves as an exhaustive, annotated catalog of the most influential
 *   [🔩 Classical Adversarial ML & Deep Robustness](#-classical-adversarial-ml--deep-robustness)
 *   [🔓 LLM Direct Prompt Injection & Jailbreaking](#-llm-direct-prompt-injection--jailbreaking)
 *   [🧬 Indirect Prompt Injection & RAG Exploitation](#-indirect-prompt-injection--rag-exploitation)
+*   [🖥️ Agentic Coding Assistants & Tool/Protocol Exploitation](#-agentic-coding-assistants--toolprotocol-exploitation)
 *   [📦 Data Poisoning, Trojans & Supply Chain Sleeper Agents](#-data-poisoning-trojans--supply-chain-sleeper-agents)
 *   [🔬 Model Extraction, Inversion & Privacy Attacks](#-model-extraction-inversion--privacy-attacks)
 *   [🧠 Mechanistic Interpretability & Deep Alignment](#-mechanistic-interpretability--deep-alignment)
@@ -87,6 +88,26 @@ The threat model introduced when LLMs act as autonomous agents, processing data 
 *   **Paper Link**: [https://arxiv.org/abs/2302.12173](https://arxiv.org/abs/2302.12173)
 *   **Why it Matters**: Practical demonstration of indirect prompt injections against commercial agent pipelines. Exposes how search integrations, tool executions, and multi-agent systems fail to preserve session boundary integrity.
 *   **What to pay attention to**: Note their evaluation of *tool abuse* and how the principle of least privilege is systematically violated in modern RAG setups.
+
+---
+
+## 🖥️ Agentic Coding Assistants & Tool/Protocol Exploitation
+
+The 2025–26 threat class that dominates the [incidents catalog](INCIDENTS_AND_GUIDANCE_2026.md): high-privilege AI coding agents (Cursor, GitHub Copilot, Claude Code) that can run shell commands, edit files, and call MCP tools — turning a prompt injection buried in a repo, an issue, or a tool description into real code execution. These two papers are the empirical, peer-reviewable grounding under the disclosed CVEs.
+
+### [1] "Your AI, My Shell": Demystifying Prompt Injection Attacks on Agentic AI Coding Editors
+*   **Authors**: Yue Liu, Yanjie Zhao, Yunbo Lyu, Ting Zhang, Haoyu Wang, David Lo
+*   **Year**: 2025
+*   **Paper Link**: [https://arxiv.org/abs/2509.22040](https://arxiv.org/abs/2509.22040)
+*   **Why it Matters**: The first *empirical* analysis of prompt injection against high-privilege agentic coding editors. The authors build **AIShellJack**, an automated testing framework with **314 attack payloads mapped to 70 MITRE ATT&CK techniques**, and measure attack success rates as high as **84%** for malicious command execution on GitHub Copilot and Cursor — spanning initial access, system discovery, and credential theft.
+*   **What to pay attention to**: The ATT&CK mapping is the useful part — it lets you turn "the agent can be hijacked" into a concrete, testable coverage matrix, and cross-references cleanly onto the runtime incidents (IDEsaster, the Cursor/Claude Code CVEs) in the incidents file.
+
+### [2] Prompt Injection Attacks on Agentic Coding Assistants: A Systematic Analysis of Vulnerabilities in Skills, Tools, and Protocol Ecosystems
+*   **Authors**: Narek Maloyan, Dmitry Namiot
+*   **Year**: 2026
+*   **Paper Link**: [https://arxiv.org/abs/2601.17548](https://arxiv.org/abs/2601.17548)
+*   **Why it Matters**: Extends the empirical work into a **unified taxonomy** across skills, tools, and MCP, and delivers the first systematic analysis of **skill-based architecture** vulnerabilities with concrete exploit chains. Its sobering headline: across **18 defense mechanisms** from prior work, **most achieve less than 50% mitigation** against sophisticated adaptive attacks — the empirical case for treating prompt injection as a first-class, architecture-level vulnerability rather than something a filter can patch.
+*   **What to pay attention to**: The 18-defense evaluation is the counterweight to vendor guardrail marketing — read it alongside any "we added a guardrail" claim, and use its defense-in-depth framing when hardening an agent (it pairs directly with the NIST AI 600-1 / OWASP Agentic controls in [STANDARDS_AND_COMPLIANCE.md](STANDARDS_AND_COMPLIANCE.md)).
 
 ---
 
