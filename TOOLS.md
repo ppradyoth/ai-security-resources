@@ -12,6 +12,7 @@ This catalog is deliberately **curated, not exhaustive**. Each tool earns its pl
 - [🔴 LLM Red-Teaming & Vulnerability Scanners](#-llm-red-teaming--vulnerability-scanners)
 - [🤖 MCP & Agent Security](#-mcp--agent-security)
 - [⚡ Runtime Guardrails & Prompt-Injection Defense](#-runtime-guardrails--prompt-injection-defense)
+- [🧱 Open-Weight Guardrail Models (safety classifiers)](#-open-weight-guardrail-models-safety-classifiers)
 - [🔬 Model Supply-Chain & Serialization Scanning](#-model-supply-chain--serialization-scanning)
 - [🧪 Adversarial ML Robustness](#-adversarial-ml-robustness)
 - [Picking the right tool — a 30-second decision guide](#picking-the-right-tool--a-30-second-decision-guide)
@@ -62,6 +63,24 @@ Tools here are **complementary, not interchangeable**. A red-team scanner (garak
 | **[NeMo Guardrails](https://github.com/NVIDIA-NeMo/Guardrails)** | NVIDIA | Programmable guardrails (a DSL, *Colang*) for constraining conversational flows, topics, and tool use; integrates LLM-vulnerability scanning into its eval docs. | 🟢 |
 | **[Rebuff](https://github.com/protectai/rebuff)** | Protect AI | Prompt-injection detector layering heuristics, an LLM check, a vector DB of known attacks, and canary tokens. Conceptually still a great reference design. | 🔴 archived |
 
+> **Frameworks vs. models.** The tools above are *frameworks* — they orchestrate scanners, flows, and policies. What many of them actually call under the hood is an **open-weight classifier model** trained to label a prompt or response safe/unsafe. Those models are listed separately below, because you can also deploy them directly.
+
+---
+
+## 🧱 Open-Weight Guardrail Models (safety classifiers)
+
+*Small, open-weight models fine-tuned to classify a prompt or a response against a safety taxonomy. Deploy one as an input filter (screen user prompts), an output filter (screen model responses), or both. They're the moderation layer the frameworks above wrap — but you can run them standalone.*
+
+| Model | Maintainer | What it classifies | Notes |
+|:---|:---|:---|:---|
+| **[Llama Guard 4 (12B)](https://huggingface.co/meta-llama/Llama-Guard-4-12B)** | Meta | Prompt **and** response safety against the MLCommons hazards taxonomy (plus a *Code Interpreter Abuse* category). | Natively **multimodal** (text + multiple images), dense model pruned from Llama 4 Scout. Successor to the text-only Llama Guard 3. Meta [PurpleLlama](https://github.com/meta-llama/PurpleLlama). |
+| **[Llama Prompt Guard 2 (86M / 22M)](https://huggingface.co/meta-llama/Llama-Prompt-Guard-2-86M)** | Meta | **Prompt-injection / jailbreak intent** only — flags input that tries to override prior instructions. | Different job from Llama Guard: it screens *injection*, not *harm*. Meta recommends putting it **in front of** Llama Guard, since a content classifier is itself an LLM and thus injectable. The **22M** variant is for per-request, latency-sensitive screening (released Apr 2025 with Llama 4). |
+| **[ShieldGemma / ShieldGemma 2](https://huggingface.co/google/shieldgemma-2b)** | Google | Text prompt/response safety across defined harm policies; **ShieldGemma 2** adds **image** moderation. | Built on Gemma; text variants at 2B / 9B / 27B. ShieldGemma 2 (Mar 2025) extends moderation to images. |
+| **[Granite Guardian](https://arxiv.org/abs/2412.07724)** | IBM | Harm categories **plus RAG-specific** grounding / hallucination and prompt-injection checks. | Part of the [`ibm-granite`](https://huggingface.co/ibm-granite) stack; 3.x family in ~2B–8B sizes. Strong on the RAG-grounding and injection lanes. |
+| **[WildGuard (7B)](https://huggingface.co/allenai/wildguard)** | Allen AI (AI2) | One model, three jobs: **prompt harm**, **response harm**, and **refusal** detection. | Trained on the open **WildGuardMix** corpus (~86.7K examples); paper [arXiv:2406.18495](https://arxiv.org/abs/2406.18495), NeurIPS 2024 D&B. Notably low over-blocking on benign traffic. |
+
+> **A guardrail model is not a guarantee.** These classifiers reduce risk; they don't eliminate it. They can be **evaded** by adversarial phrasing and — because most are themselves LLMs — can be **prompt-injected**, which is exactly why Meta stacks Prompt Guard *ahead of* Llama Guard. Independent evaluations (e.g. [arXiv:2511.22047](https://arxiv.org/abs/2511.22047), on guardrail robustness under adversarial attack) consistently show meaningful bypass rates, so treat a guard model as **one defense-in-depth layer**, benchmark it on *your* traffic (watch the false-negative *and* over-blocking rates), and never let it be the only thing between untrusted input and a privileged action. For where these fit in a full agent threat model, see [AGENT_SECURITY.md](AGENT_SECURITY.md); for the offense side that tests them, [BENCHMARKS_AND_DATASETS.md](BENCHMARKS_AND_DATASETS.md).
+
 ---
 
 ## 🔬 Model Supply-Chain & Serialization Scanning
@@ -96,7 +115,7 @@ Tools here are **complementary, not interchangeable**. A red-team scanner (garak
 
 - **"Is my LLM jailbreakable?"** → start with **garak**, escalate to **PyRIT** for multi-turn campaigns.
 - **"I'm shipping an agent with MCP tools."** → run **mcp-scan** on the config first; think about trifecta composition before you connect a web-fetch server to a private-data server.
-- **"I need to block bad input/output in prod."** → **LLM Guard** (filtering) and/or **NeMo Guardrails** (flow control).
+- **"I need to block bad input/output in prod."** → **LLM Guard** (filtering) and/or **NeMo Guardrails** (flow control); under the hood, deploy an open-weight guard model — **Llama Guard 4** (harm) with **Prompt Guard 2** in front of it (injection), or **Granite Guardian** if you need RAG-grounding checks. Benchmark it on your own traffic — guard models get bypassed.
 - **"I'm downloading a model off the internet."** → **ModelScan** before you `load()`.
 - **"I'm hardening a vision/NLP classifier."** → **ART** (+ **Foolbox**/**TextAttack** for targeted attack generation).
 
