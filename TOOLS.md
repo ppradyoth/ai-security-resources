@@ -13,6 +13,7 @@ This catalog is deliberately **curated, not exhaustive**. Each tool earns its pl
 - [🤖 MCP & Agent Security](#-mcp--agent-security)
 - [⚡ Runtime Guardrails & Prompt-Injection Defense](#-runtime-guardrails--prompt-injection-defense)
 - [🧱 Open-Weight Guardrail Models (safety classifiers)](#-open-weight-guardrail-models-safety-classifiers)
+- [🔭 Runtime Observability & Attack Detection](#-runtime-observability--attack-detection)
 - [🔬 Model Supply-Chain & Serialization Scanning](#-model-supply-chain--serialization-scanning)
 - [🧪 Adversarial ML Robustness](#-adversarial-ml-robustness)
 - [Picking the right tool — a 30-second decision guide](#picking-the-right-tool--a-30-second-decision-guide)
@@ -22,7 +23,7 @@ This catalog is deliberately **curated, not exhaustive**. Each tool earns its pl
 
 ## How to use this page
 
-Tools here are **complementary, not interchangeable**. A red-team scanner (garak) tells you *if* your model breaks; a runtime guardrail (LLM Guard) tries to *stop* the break in production; an MCP scanner (mcp-scan) checks the *agent's tool surface* before either matters. Most serious setups run one from several categories.
+Tools here are **complementary, not interchangeable**. A red-team scanner (garak) tells you *if* your model breaks; a runtime guardrail (LLM Guard) tries to *stop* the break in production; an MCP scanner (mcp-scan) checks the *agent's tool surface* before either matters; and an observability layer (Langfuse, Invariant) *records and detects* what slipped through, because guardrails do fail. Most serious setups run one from several categories.
 
 > **Maturity legend:** 🟢 actively maintained · 🟡 maintained but niche/research · 🔴 archived or read-only (use with eyes open).
 
@@ -83,6 +84,20 @@ Tools here are **complementary, not interchangeable**. A red-team scanner (garak
 
 ---
 
+## 🔭 Runtime Observability & Attack Detection
+
+*Guardrails try to **block** in-line; these tools **record and detect** what actually happened, so you can catch the attack that slipped past — and investigate it afterwards. You can't respond to an incident you never logged.*
+
+| Tool | Maintainer | What it does | Status |
+|:---|:---|:---|:---|
+| **[Invariant (Analyzer + Guardrails)](https://github.com/invariantlabs-ai/invariant)** | Invariant Labs | Security-native layer for agents: the **Analyzer** scans agent execution *traces* to flag prompt injection, data leaks, unsafe code execution, and loop/quirk bugs; **Guardrails + Gateway** sit between the agent and its LLM/MCP servers to monitor and steer without invasive code changes; **Explorer** visualizes and annotates traces. Same lab as `mcp-scan` above — the runtime companion to their static scanner. | 🟢 |
+| **[Langfuse](https://github.com/langfuse/langfuse)** | Langfuse | Self-hostable LLM tracing/observability. Core (everything outside `/ee`) is **MIT** — full tracing, evals, and dashboards with no feature caps when self-hosted. The forensics substrate: capture every prompt, tool call, and response so a bypass leaves an auditable record you can query after the fact. | 🟢 |
+| **[OpenLLMetry](https://github.com/traceloop/openllmetry)** | Traceloop | **Apache-2.0** OpenTelemetry extensions for GenAI — vendor-neutral instrumentation for LLM providers, vector DBs, and agent frameworks that emits standard OTel spans (prompts, tool calls, token usage) into whatever backend your SOC already runs. Traceloop co-leads the OpenTelemetry GenAI semantic-conventions working group, so this is the standards-track capture layer. | 🟢 |
+
+> **Detection is the layer that assumes prevention fails.** This page is candid that guardrails and guard models [get bypassed](#-open-weight-guardrail-models-safety-classifiers) — which is exactly why the *record-and-detect* layer matters: it's how you notice the bypass, reconstruct the attack path, and feed real incidents back into your red-team and guardrail tuning. **Langfuse** and **OpenLLMetry** are *dual-use* — general observability you point at security questions; **Invariant** is purpose-built for agent security. Pair a capture layer (Langfuse / OpenLLMetry) with trace-level detection (Invariant Analyzer), and map the detections to your threat model — see [AGENT_SECURITY.md](AGENT_SECURITY.md).
+
+---
+
 ## 🔬 Model Supply-Chain & Serialization Scanning
 
 *Models are code. A pickle/`.bin` file can carry arbitrary execution. Scan artifacts before you load them.*
@@ -116,6 +131,7 @@ Tools here are **complementary, not interchangeable**. A red-team scanner (garak
 - **"Is my LLM jailbreakable?"** → start with **garak**, escalate to **PyRIT** for multi-turn campaigns.
 - **"I'm shipping an agent with MCP tools."** → run **mcp-scan** on the config first; think about trifecta composition before you connect a web-fetch server to a private-data server.
 - **"I need to block bad input/output in prod."** → **LLM Guard** (filtering) and/or **NeMo Guardrails** (flow control); under the hood, deploy an open-weight guard model — **Llama Guard 4** (harm) with **Prompt Guard 2** in front of it (injection), or **Granite Guardian** if you need RAG-grounding checks. Benchmark it on your own traffic — guard models get bypassed.
+- **"Did an attack get *through* my defenses?"** → you need the **detect** layer, not another blocker: capture traces with **Langfuse** or **OpenLLMetry**, then run the **Invariant Analyzer** over them to surface injection / data-leak / unsafe-exec after the fact.
 - **"I'm downloading a model off the internet."** → **ModelScan** before you `load()`.
 - **"I'm hardening a vision/NLP classifier."** → **ART** (+ **Foolbox**/**TextAttack** for targeted attack generation).
 
