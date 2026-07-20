@@ -314,7 +314,7 @@ Released **December 9, 2025** with input from 100+ security researchers and prac
 - **Memory and context poisoning** — corrupting persistent state so the attack survives across sessions.
 - Risks arising specifically from **autonomous decision-making, delegation, and tool integration.**
 
-If you build agents, this list — not the LLM Top 10 — is now your baseline. A runnable mapping exists in [DeepTeam's agentic framework docs](https://www.trydeepteam.com/docs/frameworks-owasp-top-10-for-agentic-applications).
+If you build agents, this list — not the LLM Top 10 — is now your baseline. **The full enumerated `ASI01–ASI10` list, each risk mapped to the LLM-era risk it extends and to the incidents in this file, is in [STANDARDS_AND_COMPLIANCE.md → OWASP Top 10 for Agentic Applications (2026)](STANDARDS_AND_COMPLIANCE.md#-owasp-top-10-for-agentic-applications-2026).** A runnable mapping exists in [DeepTeam's agentic framework docs](https://www.trydeepteam.com/docs/frameworks-owasp-top-10-for-agentic-applications).
 
 ---
 

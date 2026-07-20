@@ -53,6 +53,31 @@ The [OWASP Top 10 for LLM Applications](https://owasp.org/www-project-top-10-for
 
 ---
 
+## 🤖 OWASP Top 10 for Agentic Applications (2026)
+
+The LLM Top 10 above is the *model-era* baseline. Once a model can **plan, delegate, use tools, and act autonomously**, a new class of risk appears that a prompt-level list never captured — so the OWASP GenAI Security Project shipped a dedicated agentic list. Released **December 2025** (peer-reviewed with input from 100+ contributors), the [**OWASP Top 10 for Agentic Applications 2026**](https://genai.owasp.org/2025/12/09/owasp-top-10-for-agentic-applications-the-benchmark-for-agentic-security-in-the-age-of-autonomous-ai/) uses the **`ASI` prefix** (Agentic Security / Agentic Systems Initiative) and each entry maps back to one or more foundational LLM risks while adding attack vectors that only exist under autonomy, tool integration, and multi-agent coordination.
+
+**If you build agents, this — not the LLM Top 10 — is your baseline.** Each row below links the agentic risk to the LLM-era risk it extends and to the real-world incident in [INCIDENTS_AND_GUIDANCE_2026.md](INCIDENTS_AND_GUIDANCE_2026.md) that demonstrates it.
+
+| ID | Risk | What's new once the model can *act* | Extends / maps to |
+|:---|:---|:---|:---|
+| **ASI01** | Agent Goal / Behavior Hijack | An attacker redirects the agent's *objective* mid-task, not just a single response — turning your asset into a weapon that keeps pursuing the hijacked goal across steps. | LLM01 (Prompt Injection); realized by **EchoLeak**, **CometJacking** |
+| **ASI02** | Tool Misuse & Exploitation | Abusing tools the agent was *legitimately* granted (over-broad scope, missing arg validation) to reach systems the model itself never could. | LLM07 (Insecure Plugin Design), LLM08 (Excessive Agency); the **MCP tool-poisoning** cluster, **Semantic Kernel** tool→RCE |
+| **ASI03** | Agent Identity & Privilege Abuse | One broad token or shared identity across an agent fleet means a single compromise inherits everything the agent can do. | LLM08; **LiteLLM** gateway breach, **ServiceNow Now Assist** privilege reuse |
+| **ASI04** | Agentic Supply Chain Compromise | Poisoned MCP servers, malicious tool definitions, or trojaned sub-agents entering via the agent's *extension* surface, not the model. | LLM05 (Supply Chain); first in-the-wild malicious MCP (**`postmark-mcp`**), **IDEsaster** |
+| **ASI05** | Unexpected Code Execution | The agent reaching a code/`eval`/shell sink — often the framework's *own* — with attacker-influenced input. | LLM02 (Insecure Output Handling); **Semantic Kernel** `eval()` (CVE-2026-26030), **MCP Inspector RCE** |
+| **ASI06** | Memory & Context Poisoning | Corrupting persistent memory or retrieved context so the attack **survives across sessions** — the model looks fine each turn, the *state* is compromised. | LLM03 (Data Poisoning); ATLAS *Memory Manipulation* / *Context Poisoning* techniques |
+| **ASI07** | Insecure Inter-Agent Communication | In multi-agent systems, one agent injecting/deceiving another over an untrusted A2A channel — agent-to-agent recruitment. | new to agentic; **ServiceNow Now Assist** agent-to-agent injection |
+| **ASI08** | Cascading Agent Failures | A single bad output propagating through a chain of agents, each amplifying the last — a failure mode with no single-agent analogue. | new to agentic (systemic/emergent) |
+| **ASI09** | Human-Agent Trust Exploitation | Abusing the human's *trust* in the agent (e.g. an agent confidently requesting an approval it was tricked into) to get high-impact actions rubber-stamped. | LLM09 (Overreliance) |
+| **ASI10** | Rogue Agents | An agent that drifts from its intended purpose **without active external manipulation** — misaligned reward/governance rather than a discrete exploit. | new to agentic (alignment/governance) |
+
+> **How to use it:** run the [OWASP GenAI Red Teaming Guide](#-owasp-genai-red-teaming-guide) four-phase method (below); the agentic risks land almost entirely in **Phase 4 (runtime behavior)**, which is exactly where a model-only red team goes blind. For a *matrix* (tactic→technique) view of the same execution-layer threats, pivot to the [MITRE ATLAS agentic expansion](INCIDENTS_AND_GUIDANCE_2026.md#13-mitre-atlas--the-agentic-expansion-zenity-labs-collaboration) — ASI06 ≈ ATLAS *Context Poisoning* + *Memory Manipulation*, ASI07 ≈ *Modify AI Agent Configuration*.
+
+> **Verification note (zero-fabrication):** The list, `ASI01–ASI10` IDs, and December 2025 release are corroborated across multiple independent write-ups of the OWASP publication (the OWASP GenAI project announcement, plus DeepTeam / Promptfoo / vendor guides). The OWASP primary resource + PDF (the [resource page](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/)) currently blocks automated fetching, and some coverage renders **ASI01** as either *"Agent Goal Hijack"* or *"Agent Behavior Hijacking"* — **confirm exact wording, ordering, and any point-release renames against the official OWASP PDF before quoting in formal work.** Incident cross-references point to entries already verified in `INCIDENTS_AND_GUIDANCE_2026.md`.
+
+---
+
 ## 🎯 OWASP GenAI Red Teaming Guide
 
 The Top 10 tells you *what* can go wrong; the [**OWASP GenAI Red Teaming Guide**](https://genai.owasp.org/resource/genai-red-teaming-guide/) (first version released [January 2025](https://genai.owasp.org/2025/01/22/announcing-the-owasp-gen-ai-red-teaming-guide/)) is the OWASP Gen AI Security Project's structured, risk-based methodology for *actively finding* it. Its core contribution is refusing to treat "red teaming an LLM" as "type jailbreak prompts until one works." Instead it frames the exercise as a **holistic, four-phase evaluation** — because a model that passes prompt-level testing can still be trivially exploited through its deployment pipeline, its surrounding infrastructure, or its emergent behavior once tools and memory are attached.
