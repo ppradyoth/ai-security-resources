@@ -28,17 +28,29 @@ Benchmarks are automated frameworks that systematically query models with thousa
     3.  **Cyberattack Aid**: Does the model assist in planning or executing active cyberattacks?
     4.  **Jailbreak Vulnerability**: How easily can the model be coerced into assisting with cyberattacks under adversarial prompts?
 
-#### [AgentDojo](https://github.com/nareshr/agentdojo)
-*   **Purpose**: A benchmark suite designed specifically for evaluating security vulnerabilities in **Agentic LLMs** (agents that can invoke tools, search databases, and execute code).
-*   **Why it matters**: It focuses heavily on **Indirect Prompt Injection** scenarios, measuring how easily a rogue email or web page can hijack an agent, force it to abuse its available tools, leak user data, or perform unauthorized transactions.
+#### [AgentDojo](https://github.com/ethz-spylab/agentdojo)
+*   **Purpose**: A benchmark suite (ETH Zurich SPY Lab; NeurIPS 2024 Datasets & Benchmarks, [arXiv:2406.13352](https://arxiv.org/abs/2406.13352)) designed specifically for evaluating security vulnerabilities in **Agentic LLMs** (agents that can invoke tools, search databases, and execute code). Ships **97 realistic user tasks and 629 security test cases** across four domains (banking, Slack, travel, workspace).
+*   **Why it matters**: It focuses heavily on **Indirect Prompt Injection** scenarios, measuring how easily a rogue email or web page can hijack an agent, force it to abuse its available tools, leak user data, or perform unauthorized transactions. Crucially, it scores results via **formal utility checks over environment state** (not an LLM judge), so runs are reproducible, and it is explicitly extensible with new tasks/attacks/defenses. Public leaderboard at [agentdojo.spylab.ai](https://agentdojo.spylab.ai).
 
-#### [Harmful-QA](https://github.com/poloclub/harmful-qa)
-*   **Purpose**: A benchmark designed to evaluate model alignment and response filters across diverse categories of sensitive and dangerous questions.
-*   **Why it matters**: It contains questions spanning topics like cyber-sabotage, biological threats, financial fraud, and physical harm, scoring models on how safely they refuse requests without being overly sensitive to benign inputs.
+#### [InjecAgent](https://github.com/uiuc-kang-lab/InjecAgent)
+*   **Purpose**: The earlier tool-call-centric benchmark for **indirect prompt injection** in tool-integrated LLM agents (UIUC; ACL 2024 Findings, [arXiv:2403.02691](https://arxiv.org/abs/2403.02691)). Comprises **1,054 test cases** across **17 user tools and 62 attacker tools**.
+*   **Why it matters**: It splits attacker goals into **direct-harm** vs. **data-stealing** attacks, giving a clean taxonomy of what an injected instruction is *trying to do* through an agent's tools. Pairs with AgentDojo to triangulate the agentic-injection threat model.
 
-#### [FigStep](https://github.com/Visual-Adversarial-ML/FigStep)
+#### [AgentHarm](https://huggingface.co/datasets/ai-safety-institute/AgentHarm)
+*   **Purpose**: A benchmark for the **harmfulness of LLM agents** — a collaboration between **Gray Swan AI** and the **UK AI Safety Institute** (core contributors from EPFL, CAIS, CMU, Oxford; ICLR 2025, [arXiv:2410.09024](https://arxiv.org/abs/2410.09024)). Ships **110 explicitly malicious agent tasks (440 with augmentations)** across **11 harm categories** (fraud, cybercrime, harassment, and more). The public dataset is **partially released** (44/66 public-test base behaviors + validation set) under an MIT license with a **safety-only-use** clause, to blunt misuse.
+*   **Why it matters**: This is the *third leg* of the agentic-eval stool and measures a different axis than the two above. AgentDojo and InjecAgent test whether an agent can be **hijacked by an injection**; AgentHarm tests whether an agent will **directly comply with an openly malicious multi-step request** — and, critically, it scores not just refusal but whether a *jailbroken* agent **retains the capability to actually complete the harmful task**, since a model that "agrees" but then bungles the tool calls poses little real risk. It ships ready-to-run inside the UK AISI's **[Inspect](https://github.com/UKGovernmentBEIS/inspect_ai)** evals framework (already cataloged below), so a run is a `pip install` away.
+
+#### [Agent Security Bench (ASB)](https://github.com/agiresearch/ASB)
+*   **Purpose**: A framework that **formalizes and benchmarks both attacks *and* defenses** across the full LLM-agent operating surface (Rutgers/AGI Research; ICLR 2025, [arXiv:2410.02644](https://arxiv.org/abs/2410.02644)). Spans **10 scenarios** (e.g., e-commerce, finance, autonomous driving, legal/investment advising), **10 agents**, **400+ tools**, **27 attack/defense methods**, and **7 evaluation metrics**, run across **13 LLM backbones**.
+*   **Why it matters**: Where AgentDojo/InjecAgent focus on the *injection* entry point, ASB maps the threat across **every stage of agent operation** — system prompt, user prompt, tool use, and memory retrieval — pairing **Direct** and **Indirect Prompt Injection** with a **Memory-Poisoning** attack and a novel **Plan-of-Thought (PoT) backdoor**, plus 4 mixed attacks and **11 corresponding defenses**. Its headline finding is the useful, sobering one for defenders: a **highest average attack success rate of 84.30%** with **current defenses showing limited effectiveness** — i.e., the benchmark exists precisely because the defensive side is still losing. Use it as the *attack-and-defense-coverage* leg alongside AgentDojo (injection utility), InjecAgent (injection taxonomy), and AgentHarm (direct harm compliance).
+
+#### [HarmfulQA](https://github.com/declare-lab/red-instruct)
+*   **Purpose**: A ChatGPT-distilled safety benchmark and alignment dataset (declare-lab; [arXiv:2308.09662](https://arxiv.org/abs/2308.09662)) of **1,960 harmful questions** across 10 topics, built with the Chain-of-Utterances prompt. Dataset on [Hugging Face](https://huggingface.co/datasets/declare-lab/HarmfulQA).
+*   **Why it matters**: It evaluates model alignment and refusal behavior across diverse categories of sensitive and dangerous questions, scoring how safely a model refuses without being overly sensitive to benign inputs.
+
+#### [FigStep](https://github.com/ThuCCSLab/FigStep)
 *   **Purpose**: A benchmark evaluating **Multimodal LLM (VLM)** security against visual jailbreaks.
-*   **Why it matters**: Many vision-language models can block textual jailbreaks but fail when the adversarial instruction is printed as text inside an image file and uploaded to the model. FigStep measures multimodal safety alignment.
+*   **Why it matters**: Many vision-language models can block textual jailbreaks but fail when the adversarial instruction is printed as text inside an image file and uploaded to the model. FigStep measures multimodal safety alignment ([arXiv:2311.05608](https://arxiv.org/abs/2311.05608), AAAI 2025 Oral).
 
 ---
 
@@ -48,8 +60,8 @@ Datasets are collections of historical jailbreaks, prompt injections, poisoned d
 
 ### 🔓 Prompt Injection & Jailbreak Datasets
 
-#### [Jailbreak-LLM-Dataset](https://github.com/verazuo/jailbreak-LLM)
-*   **Purpose**: A collection of thousands of historical jailbreak prompts scraped from online forums, Reddit (`r/ChatGPT`), and academic papers.
+#### [In-The-Wild Jailbreak Prompts (`jailbreak_llms`)](https://github.com/verazuo/jailbreak_llms)
+*   **Purpose**: The dataset behind *"Do Anything Now": Characterizing and Evaluating In-The-Wild Jailbreak Prompts on LLMs* (ACM CCS 2024). **15,140 prompts** collected Dec 2022–Dec 2023 from Reddit, Discord, websites, and open-source datasets — including **1,405 labeled jailbreak prompts**.
 *   **Why it matters**: It contains diverse jailbreak styles (role-play, character splits, translator modes, hypothetical scenarios, virtual environments). Excellent for training security classifiers or populating input-filter databases.
 
 #### [HackAPrompt Dataset](https://huggingface.co/datasets/hackaprompt/hackaprompt-dataset)
@@ -60,8 +72,8 @@ Datasets are collections of historical jailbreaks, prompt injections, poisoned d
 *   **Purpose**: Crowdsourced dataset of prompt injection attacks and defenses generated from the *TensorTrust* interactive security game.
 *   **Why it matters**: It contains both attack prompts (designed to bypass constraints and extract secret keys) and defense system prompts (written by players to protect keys). Highly useful for analyzing the real-world dynamics of prompt-level security engineering.
 
-#### [Do-Not-Answer Dataset](https://github.com/LianminZheng/do-not-answer)
-*   **Purpose**: A dataset of 936 carefully curated questions that models should refuse to answer based on standard AI safety guidelines.
+#### [Do-Not-Answer Dataset](https://github.com/Libr-AI/do-not-answer)
+*   **Purpose**: A dataset of 939 carefully curated questions that models should refuse to answer based on standard AI safety guidelines (LibrAI).
 *   **Why it matters**: Organized across distinct risk categories (e.g., identity theft, cyberattacks, self-harm, harassment), it serves as a high-quality test set to evaluate if a model's safety alignment matches modern compliance baseline standards.
 
 ### 🧪 Data Poisoning & Backdoor Datasets
@@ -76,8 +88,15 @@ Datasets are collections of historical jailbreaks, prompt injections, poisoned d
 
 These are the operational toolkits that security engineers can run locally or in CI/CD pipelines to systematically evaluate models against these benchmarks.
 
-*   **[garak](https://github.com/leondz/garak)**: The "nmap for LLMs". Automatically runs hundreds of attack modules (prompt injection, jailbreak, data leakage, toxicity) and scores the target model's failure rates.
+*   **[garak](https://github.com/NVIDIA/garak)**: The "nmap for LLMs" (now maintained under NVIDIA). Automatically runs hundreds of attack modules (prompt injection, jailbreak, data leakage, toxicity) and scores the target model's failure rates.
 *   **[PyRIT (Python Risk Identification Tool)](https://github.com/Azure/PyRIT)**: Microsoft's open-source framework for red teaming generative AI systems. Allows researchers to orchestrate multi-turn, adaptive adversarial conversations.
 *   **[CyberSecEval Toolkit](https://github.com/meta-llama/PurpleLlama/tree/main/CyberSecEval)**: Meta's testing framework to locally run the CyberSecEval benchmark on any custom-trained LLM.
-*   **[PromptArmor Evaluator](https://github.com/PromptArmor/evaluator)**: Focused on testing indirect prompt injection vulnerabilities inside RAG (Retrieval-Augmented Generation) pipelines and search integrations.
-*   **[Inspect AI](https://github.com/UKGovernmentBEIS/inspect)**: Developed by the UK government's AI Safety Institute, a highly scalable, robust framework for evaluating model capabilities, cybersecurity risks, and autonomous capabilities.
+*   **[promptfoo](https://github.com/promptfoo/promptfoo)**: Open-source (MIT) CLI/library for evaluating and **red-teaming** LLM apps, agents, and RAG pipelines. Auto-generates adversarial probes via 50+ attack plugins (prompt injection, jailbreaks, PII leakage, excessive agency) with first-class CI/CD integration and OWASP LLM Top 10 / NIST AI RMF / MITRE ATLAS report mappings.
+*   **[AgentDojo](https://github.com/ethz-spylab/agentdojo)**: Run the agentic indirect-prompt-injection benchmark above locally — pip-installable, with formal utility scoring and a pluggable attack/defense interface (see the Benchmarks section for details).
+*   **[Inspect AI](https://github.com/UKGovernmentBEIS/inspect_ai)**: Developed by the UK government's AI Security Institute (AISI), a highly scalable, robust framework for evaluating model capabilities, cybersecurity risks, and autonomous capabilities. Companion eval collection: [`inspect_evals`](https://github.com/UKGovernmentBEIS/inspect_evals).
+
+---
+
+> **Link integrity:** Every repository link on this page is verified against its canonical source. Last full verification pass: **2026-06-30** — corrected the AgentDojo, garak, Inspect AI, Do-Not-Answer, HarmfulQA, FigStep, and `jailbreak_llms` links to their canonical repositories, and added InjecAgent. **2026-07-10** — added **AgentHarm** (ICLR 2025; Gray Swan AI × UK AISI), completing the agentic-eval trio (injection-hijack → indirect-injection → agent-harmfulness); links verified against arXiv, the AISI Hugging Face dataset, and the Inspect evals framework. **2026-07-11** — added **Agent Security Bench (ASB)** (ICLR 2025; [arXiv:2410.02644](https://arxiv.org/abs/2410.02644), [agiresearch/ASB](https://github.com/agiresearch/ASB)) as the attack-and-defense-coverage leg spanning the full agent lifecycle; verified against the arXiv record, OpenReview (ICLR 2025), and the official GitHub repo. Spot a stale or moved link? [Open an issue or PR](CONTRIBUTING.md).
+>
+> Maintained with [Claude Code](https://claude.ai/code) — see the [autonomous agent experiment](https://github.com/ppradyoth/social-experiment-with-agents).
