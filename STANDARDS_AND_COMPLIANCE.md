@@ -53,6 +53,64 @@ The [OWASP Top 10 for LLM Applications](https://owasp.org/www-project-top-10-for
 
 ---
 
+## 🤖 OWASP Top 10 for Agentic Applications (2026)
+
+The LLM Top 10 above is the *model-era* baseline. Once a model can **plan, delegate, use tools, and act autonomously**, a new class of risk appears that a prompt-level list never captured — so the OWASP GenAI Security Project shipped a dedicated agentic list. Released **December 2025** (peer-reviewed with input from 100+ contributors), the [**OWASP Top 10 for Agentic Applications 2026**](https://genai.owasp.org/2025/12/09/owasp-top-10-for-agentic-applications-the-benchmark-for-agentic-security-in-the-age-of-autonomous-ai/) uses the **`ASI` prefix** (Agentic Security / Agentic Systems Initiative) and each entry maps back to one or more foundational LLM risks while adding attack vectors that only exist under autonomy, tool integration, and multi-agent coordination.
+
+**If you build agents, this — not the LLM Top 10 — is your baseline.** Each row below links the agentic risk to the LLM-era risk it extends and to the real-world incident in [INCIDENTS_AND_GUIDANCE_2026.md](INCIDENTS_AND_GUIDANCE_2026.md) that demonstrates it.
+
+| ID | Risk | What's new once the model can *act* | Extends / maps to |
+|:---|:---|:---|:---|
+| **ASI01** | Agent Goal / Behavior Hijack | An attacker redirects the agent's *objective* mid-task, not just a single response — turning your asset into a weapon that keeps pursuing the hijacked goal across steps. | LLM01 (Prompt Injection); realized by **EchoLeak**, **CometJacking** |
+| **ASI02** | Tool Misuse & Exploitation | Abusing tools the agent was *legitimately* granted (over-broad scope, missing arg validation) to reach systems the model itself never could. | LLM07 (Insecure Plugin Design), LLM08 (Excessive Agency); the **MCP tool-poisoning** cluster, **Semantic Kernel** tool→RCE |
+| **ASI03** | Agent Identity & Privilege Abuse | One broad token or shared identity across an agent fleet means a single compromise inherits everything the agent can do. | LLM08; **LiteLLM** gateway breach, **ServiceNow Now Assist** privilege reuse |
+| **ASI04** | Agentic Supply Chain Compromise | Poisoned MCP servers, malicious tool definitions, or trojaned sub-agents entering via the agent's *extension* surface, not the model. | LLM05 (Supply Chain); first in-the-wild malicious MCP (**`postmark-mcp`**), **IDEsaster** |
+| **ASI05** | Unexpected Code Execution | The agent reaching a code/`eval`/shell sink — often the framework's *own* — with attacker-influenced input. | LLM02 (Insecure Output Handling); **Semantic Kernel** `eval()` (CVE-2026-26030), **MCP Inspector RCE** |
+| **ASI06** | Memory & Context Poisoning | Corrupting persistent memory or retrieved context so the attack **survives across sessions** — the model looks fine each turn, the *state* is compromised. | LLM03 (Data Poisoning); ATLAS *Memory Manipulation* / *Context Poisoning* techniques |
+| **ASI07** | Insecure Inter-Agent Communication | In multi-agent systems, one agent injecting/deceiving another over an untrusted A2A channel — agent-to-agent recruitment. | new to agentic; **ServiceNow Now Assist** agent-to-agent injection |
+| **ASI08** | Cascading Agent Failures | A single bad output propagating through a chain of agents, each amplifying the last — a failure mode with no single-agent analogue. | new to agentic (systemic/emergent) |
+| **ASI09** | Human-Agent Trust Exploitation | Abusing the human's *trust* in the agent (e.g. an agent confidently requesting an approval it was tricked into) to get high-impact actions rubber-stamped. | LLM09 (Overreliance) |
+| **ASI10** | Rogue Agents | An agent that drifts from its intended purpose **without active external manipulation** — misaligned reward/governance rather than a discrete exploit. | new to agentic (alignment/governance) |
+
+> **How to use it:** run the [OWASP GenAI Red Teaming Guide](#-owasp-genai-red-teaming-guide) four-phase method (below); the agentic risks land almost entirely in **Phase 4 (runtime behavior)**, which is exactly where a model-only red team goes blind. For a *matrix* (tactic→technique) view of the same execution-layer threats, pivot to the [MITRE ATLAS agentic expansion](INCIDENTS_AND_GUIDANCE_2026.md#13-mitre-atlas--the-agentic-expansion-zenity-labs-collaboration) — ASI06 ≈ ATLAS *Context Poisoning* + *Memory Manipulation*, ASI07 ≈ *Modify AI Agent Configuration*.
+
+> **Verification note (zero-fabrication):** The list, `ASI01–ASI10` IDs, and December 2025 release are corroborated across multiple independent write-ups of the OWASP publication (the OWASP GenAI project announcement, plus DeepTeam / Promptfoo / vendor guides). The OWASP primary resource + PDF (the [resource page](https://genai.owasp.org/resource/owasp-top-10-for-agentic-applications-for-2026/)) currently blocks automated fetching, and some coverage renders **ASI01** as either *"Agent Goal Hijack"* or *"Agent Behavior Hijacking"* — **confirm exact wording, ordering, and any point-release renames against the official OWASP PDF before quoting in formal work.** Incident cross-references point to entries already verified in `INCIDENTS_AND_GUIDANCE_2026.md`.
+
+---
+
+## 🎯 OWASP GenAI Red Teaming Guide
+
+The Top 10 tells you *what* can go wrong; the [**OWASP GenAI Red Teaming Guide**](https://genai.owasp.org/resource/genai-red-teaming-guide/) (first version released [January 2025](https://genai.owasp.org/2025/01/22/announcing-the-owasp-gen-ai-red-teaming-guide/)) is the OWASP Gen AI Security Project's structured, risk-based methodology for *actively finding* it. Its core contribution is refusing to treat "red teaming an LLM" as "type jailbreak prompts until one works." Instead it frames the exercise as a **holistic, four-phase evaluation** — because a model that passes prompt-level testing can still be trivially exploited through its deployment pipeline, its surrounding infrastructure, or its emergent behavior once tools and memory are attached.
+
+| Phase | What it evaluates | Why a single-layer test misses it |
+|:---|:---|:---|
+| **1. Model evaluation** | The model itself — alignment gaps, jailbreak susceptibility, bias, unsafe generation, training-data leakage. | This is where most "red teaming" stops. Necessary, but blind to everything the model is wired into. |
+| **2. Implementation testing** | The application layer wrapped around the model — system-prompt defenses, guardrails, input/output handling, integration logic. | Maps directly to OWASP **LLM01/LLM02/LLM07**: the model can be fine, but the glue code leaks or executes untrusted output. |
+| **3. Infrastructure assessment** | The deployment stack — model registries, serving infra, supply chain, secrets, access control around the inference endpoint. | Covers **LLM05/LLM10**: weight exfiltration and supply-chain compromise never show up in a prompt-only test. |
+| **4. Runtime behavior analysis** | The live, in-production system — agentic tool use, memory, multi-turn drift, and emergent behavior under real traffic. | This is where **agentic** risk lives (excessive agency, indirect injection via tools, context poisoning) — invisible to any static, pre-deployment check. |
+
+**Why it belongs in this repo:** it is the connective tissue between the *taxonomy* (OWASP Top 10, above) and the *tooling* ([TOOLS.md](TOOLS.md): garak, PyRIT, promptfoo) — a phase model for deciding *which* tool to point at *which* layer. It also aligns cleanly with the [MITRE ATLAS](#-mitre-atlas-adversarial-threat-landscape-for-artificial-intelligence-systems) tactics above (phases 1–2 ≈ model/ML-attack tactics; phases 3–4 ≈ the agentic and infrastructure techniques) and with the real-world failures in [INCIDENTS_AND_GUIDANCE_2026.md](INCIDENTS_AND_GUIDANCE_2026.md) — EchoLeak and CometJacking are precisely the phase-4 runtime/agentic failures a model-only red team would never surface.
+
+> **Audience:** the guide explicitly targets a broad set of roles — security engineers, AI/ML engineers, red-team practitioners, risk managers, and business leaders — so it doubles as a shared-vocabulary document for getting a whole org aligned on what "we red-teamed it" actually means. Confirm the current version and any phase-naming updates on the [primary resource page](https://genai.owasp.org/resource/genai-red-teaming-guide/) before quoting it in formal work.
+
+---
+
+## 🧭 OWASP GenAI Security Solutions Landscapes (Q2 2026) — including the first Red Teaming Landscape
+
+The Red Teaming *Guide* (above) tells you **how to test**; the **Solutions Landscapes** tell you **what to test *with*** — they map the actual tooling ecosystem, open-source and commercial, onto the AI lifecycle so you can see which stage each tool covers and where the gaps are. Ahead of RSA 2026, the OWASP Gen AI Security Project [expanded this line of work](https://genai.owasp.org/2026/03/17/owasp-genai-security-project-expands-ai-security-frameworks-ahead-of-rsa-2026-celebrates-continued-sponsor-support/) into a **trio of Q2 2026 landscapes** — and, notably, its **first dedicated Red Teaming Landscape**:
+
+| Landscape | What it maps | Why it matters here |
+|:---|:---|:---|
+| [**LLM & GenAI Security Solutions Landscape**](https://genai.owasp.org/resource/llm-and-generative-ai-security-solutions-landscape/) | The tooling ecosystem across the full LLM/GenAI lifecycle — development, testing, deployment, governance. | The "what exists to defend this" companion to the OWASP Top 10's "what can go wrong." |
+| [**Agentic AI Security Solutions Landscape (Q2 2026)**](https://genai.owasp.org/resource/ai-security-solutions-landscape-for-agentic-ai-q2-2026/) | Solutions across the **agentic** lifecycle, framed at the **DevOps–SecOps intersection** and tied to the Agentic AI Threats & Mitigations guide and SecOps tasks. | Agentic risk (privilege escalation, tool abuse, memory/context poisoning) needs *agent-aware* tooling — this is the map of it. |
+| [**AI & Agentic Red Teaming Landscape (Q2 2026)**](https://genai.owasp.org/resource/ai-security-solutions-landscape-for-ai-and-agentic-red-teaming-q2-2026/) — *the first of its kind* | A structured, lifecycle-wide **agentic red teaming taxonomy** for identifying, measuring, mitigating, and governing AI risk via coordinated adversarial testing, defensive validation, and continuous feedback loops. | Turns "red teaming" from a one-off prompt exercise into a **continuous, lifecycle discipline** with a shared taxonomy — the missing structured vocabulary for agentic adversarial testing. |
+
+**Why it belongs in this repo:** these landscapes are the connective tissue between the **methodology** ([the four-phase Red Teaming Guide](#-owasp-genai-red-teaming-guide) above) and the **operational tooling** ([TOOLS.md](TOOLS.md): garak, PyRIT, promptfoo, mcp-scan) — a way to check that your chosen tools actually cover every lifecycle stage rather than clustering on the easy (model-prompt) layer. The agentic red teaming taxonomy also maps directly onto the runtime/agentic failures cataloged in [INCIDENTS_AND_GUIDANCE_2026.md](INCIDENTS_AND_GUIDANCE_2026.md) (EchoLeak, CometJacking, ServiceNow Now Assist) and complements the [MITRE ATLAS](#-mitre-atlas-adversarial-threat-landscape-for-artificial-intelligence-systems) agent-technique vocabulary.
+
+> **Verification / confirm-live:** The existence of the three Q2 2026 landscapes and the launch of a first dedicated Red Teaming Landscape are corroborated by OWASP's own resource pages (linked above), the OWASP GenAI project's pre-RSA-2026 announcement (March 2026), and independent third-party analysis. The Solutions Landscapes are **living documents** — vendor/tool inclusion, the exact taxonomy, and version labels change each release, and OWASP-published landscapes do **not** imply endorsement of any listed vendor. Confirm the current edition and scope on the primary resource pages before citing specifics in formal work.
+
+---
+
 ## 🏛️ NIST Artificial Intelligence Risk Management Framework (NIST AI RMF 1.0)
 
 Released by the U.S. National Institute of Standards and Technology, the [NIST AI RMF](https://www.nist.gov/itl/ai-risk-management-framework) is a voluntary organizational framework designed to help enterprises design, deploy, and govern trustworthy and secure AI systems.

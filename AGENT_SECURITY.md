@@ -13,6 +13,7 @@ This guide covers the threat modeling, exploit vectors, sandboxing architectures
 *   [⚔️ Attack Vectors & Exploit Scenarios](#%EF%B8%8F-attack-vectors--exploit-scenarios)
 *   [🛡️ Secure Agent Architecture & Sandboxing](#%EF%B8%8F-secure-agent-architecture--sandboxing)
 *   [⚡ Model Context Protocol (MCP) Security](#-model-context-protocol-mcp-security)
+    *   [Composed Capability Risk: Auditing the Lethal Trifecta Across a Tool-Set](#composed-capability-risk-auditing-the-lethal-trifecta-across-a-tool-set)
 *   [🧬 Adjacent Agent Security: Vector Databases & RBAC](#-adjacent-agent-security-vector-databases--rbac)
 
 ---
@@ -124,6 +125,38 @@ MCP separates tools into a Client-Server architecture. The Client (the LLM inter
 *   **Transport Security**: All remote MCP connections must run over HTTPS or SSH. Avoid unencrypted raw socket protocols.
 *   **Granular Tool Permissions**: MCP servers must specify exact tool schemas. A client should not grant an MCP server a generic "run_command" tool. Instead, grant specific, narrow tools (e.g., `git_diff_file`, `read_code_file`).
 *   **Directory Scoping**: When configuring file-access MCP servers (like the filesystem server), explicitly restrict the root target to the active workspace. Ensure the server strictly rejects relative path traversal attempts (e.g., `../../../../etc/passwd`).
+
+### Composed Capability Risk: Auditing the *Lethal Trifecta* Across a Tool-Set
+
+Individual-server scanners (see [TOOLS.md](TOOLS.md)) tell you whether *one* MCP server is malicious or misconfigured. They cannot tell you whether a set of individually-benign servers becomes dangerous **in combination** — and that combination is where most real agentic data-exfiltration lives.
+
+The **lethal trifecta** ([Simon Willison, 16 Jun 2025](https://simonwillison.net/2025/Jun/16/the-lethal-trifecta/)) is the rule: an agent is exposed to data theft the moment its tool-set spans all three of these capabilities at once.
+
+| Capability axis | What it means | Example MCP servers / tools |
+|:---|:---|:---|
+| 🔓 **Private-data access** | The agent can read something an attacker wants (secrets, source, customer data, mailbox) | filesystem, database/SQL, GitHub/GitLab, email/calendar, internal-wiki servers |
+| 📥 **Untrusted-content exposure** | The agent ingests attacker-influenceable text that can carry instructions | web-fetch/browser, issue/PR readers, email/Slack readers, RAG over user-supplied docs |
+| 📤 **External communication** | The agent can send data somewhere an attacker receives it | web-fetch (GET with query string!), HTTP/webhook, email-send, "post a comment" tools |
+
+**The union rule:** risk is a property of the *set*, not any single server. Two "safe" servers — a private-data reader and a web-fetch tool — compose into an exfiltration channel: injected content read from a repo issue instructs the agent to append a secret to a URL it then fetches. Neither server is misconfigured; the **composition** is the vulnerability.
+
+**A note on the overloaded third leg:** a single web-fetch/browser tool frequently supplies *both* untrusted-content exposure (the page it reads) *and* external communication (the URL it requests, which can smuggle data in the path or query string). That means **one** such tool plus **one** private-data server is already the full trifecta — the most common two-server trap.
+
+#### How to audit a tool-set (the method the per-server scanners skip)
+
+1. **Enumerate every connected tool**, across *all* MCP servers the agent can reach in a single session — not one config file, the whole live surface.
+2. **Tag each tool** with the axes above (a tool can carry more than one — web-fetch is the classic double).
+3. **Take the union.** If the connected set covers all three axes, the agent is in the trifecta *regardless of how trustworthy each server is individually*.
+4. **Break the union, don't chase individual servers.** The cheapest fix is usually to remove the third leg from the *combination* — see below.
+
+#### Mitigations (break at least one leg of the composed set)
+
+*   **Split trust domains.** Don't connect a private-data server and an untrusted-content server to the *same* agent session. Run untrusted-content work in a session with no private-data tools, and vice-versa. (This is the tool-composition analogue of the dual-homed-agent problem in the RBAC section below.)
+*   **Cut the exfiltration leg.** Egress-filter the communicating tools: allowlist destination domains, strip/deny query-string and path data on outbound fetches, and require human approval before any tool sends data outside the workspace (see *Egress Network Filtering* above).
+*   **Demote the double.** Replace a general web-fetch tool with a read-only fetch that cannot be steered to arbitrary URLs (fixed allowlist), removing its "external communication" axis so the union no longer closes.
+*   **Audit composition in CI, not just servers.** Treat the *set* of enabled tools as a reviewable artifact: fail the build if a change causes the connected tool-set to newly span all three axes. This is the open niche the companion strategy repo's [Trifecta Composer](https://github.com/ppradyoth/ai-security-strategy) concept targets — the per-server scanners in [TOOLS.md](TOOLS.md) do not do it.
+
+> **Key point:** you can pass every individual-server scan and still ship the lethal trifecta. Audit the *union* of capabilities the agent holds in one session, not each server in isolation.
 
 ---
 
