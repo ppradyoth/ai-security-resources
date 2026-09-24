@@ -57,6 +57,10 @@ These platforms serve as the registries for documenting AI-specific zero-days, C
 *   **Purpose**: A global database maintained by the Organisation for Economic Co-operation and Development (OECD) tracking public AI incidents, accidents, and regulatory failures worldwide.
 *   **Why it matters**: It provides an excellent high-level overview of how AI systems are failing in production across healthcare, finance, transport, and public services.
 
+#### [Orca AI Incident Archive](https://github.com/Continuum-AI-Corp/Orca-AI-Incident-Archive)
+*   **Purpose**: An open (CC BY 4.0) database of real-world AI *agent* security incidents: 354 records from 2025-01 to 2026-09, each with an attack-chain diagram and at least one primary source, plus JSON/CSV exports.
+*   **Why it matters**: Every record states up front whether a victim was confirmed (`real_harm`), whether AI involvement is confirmed, disputed or unverified, and whether it is an incident or only a vulnerability/research result, so you can separate what agents actually did in the wild from what researchers showed they could do. It also sweeps non-English sources and carries full Chinese text of every record. New project (started September 2026); classifications are the editors' own, not official findings.
+
 ---
 
 ## 📖 Real-World Case Studies: When AI Security Failed
