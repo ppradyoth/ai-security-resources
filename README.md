@@ -47,6 +47,9 @@ To keep this guide lightweight yet exhaustive, we maintain dedicated, highly com
 | Handbook | Core Scope | Link |
 |:---|:---|:---|
 | 🚀 **Getting Started** | The 60-minute on-ramp for security/ML folks: one mental model, a hands-on Gandalf + garak win, and a track-by-track next step. Start here. | **[GETTING_STARTED.md](GETTING_STARTED.md)** |
+| 📅 **7 / 30 / 100 Days of AI Security** | Time-boxed learning paths: a zero-prerequisite week (break an LLM by hand, run garak, exploit an indirect injection, build a guardrail), a 30-day path to real red-team competence, and a 100-day self-paced curriculum. | **[7 days](LEARNING_PATH_7_DAYS.md)** · **[30 days](LEARNING_PATH_30_DAYS.md)** · **[100 days](LEARNING_PATH_100_DAYS.md)** |
+| 🎤 **AI Security Interview Questions** | Technical interview prep for 7 AI-security-adjacent roles: red team, AppSec, MLSecOps, GRC, trust & safety, alignment research, and model risk. | **[INTERVIEW_QUESTIONS.md](INTERVIEW_QUESTIONS.md)** |
+| 🧨 **Prompt Injection & Jailbreak Library** | Categorized taxonomy of injection and jailbreak technique classes, grounded in public tools (garak), papers, and datasets. No novel or undisclosed techniques. | **[JAILBREAK_LIBRARY.md](JAILBREAK_LIBRARY.md)** |
 | 💼 **Global Salary Handbook** | Exhaustive country-by-country comp rates (US, IN, UK, IE, SG, AU, ME, EU), tax brackets, rent crises, and career strategies. | **[SALARY_REALITY.md](SALARY_REALITY.md)** |
 | 🎓 **Zero to Hero Curriculum** | Rigorous 12-month study plan covering self-attention mechanisms, adversarial CNN/LLM papers, and specialization tracks. | **[ROADMAP.md](ROADMAP.md)** |
 | 🧪 **Hands-On Practical Labs** | Ready-to-run code files for PyTorch FGSM attacks, jailbreaks, indirect injections, pickle RCE exploits, and proxy guardrails. | **[LABS.md](LABS.md)** |
